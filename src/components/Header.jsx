@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/useAuth.hook";
 import { Link } from "react-router-dom";
 
 const pageClass = (currentPage, pageKey) => {

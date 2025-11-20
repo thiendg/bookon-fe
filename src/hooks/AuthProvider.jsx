@@ -1,8 +1,6 @@
-// src/hooks/useAuth.jsx
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { authService } from '@/services/auth.service';
-
-const AuthContext = createContext(null);
+import AuthContext from './AuthContext';
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -38,29 +36,21 @@ export const AuthProvider = ({ children }) => {
      * Register new user
      */
     const register = async (email, name, password) => {
-        try {
-            const data = await authService.register({ email, name, password });
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const data = await authService.register({ email, name, password });
+        return data;
     };
 
     /**
      * Login user
      */
     const login = async (email, password, rememberMe = false) => {
-        try {
-            const data = await authService.login(email, password, rememberMe);
+        const data = await authService.login(email, password, rememberMe);
 
-            if (data.success) {
-                setUser(data.data.user);
-            }
-
-            return data;
-        } catch (error) {
-            throw error;
+        if (data.success) {
+            setUser(data.data.user);
         }
+
+        return data;
     };
 
     /**
@@ -81,36 +71,24 @@ export const AuthProvider = ({ children }) => {
      * Verify email with token
      */
     const verifyEmail = async (token) => {
-        try {
-            const data = await authService.verifyEmail(token);
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const data = await authService.verifyEmail(token);
+        return data;
     };
 
     /**
      * Request password reset
      */
     const forgotPassword = async (email) => {
-        try {
-            const data = await authService.forgotPassword(email);
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const data = await authService.forgotPassword(email);
+        return data;
     };
 
     /**
      * Reset password with token
      */
     const resetPassword = async (token, password) => {
-        try {
-            const data = await authService.resetPassword(token, password);
-            return data;
-        } catch (error) {
-            throw error;
-        }
+        const data = await authService.resetPassword(token, password);
+        return data;
     };
 
     const value = {
@@ -128,16 +106,3 @@ export const AuthProvider = ({ children }) => {
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-
-/**
- * Hook to use auth context
- */
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
-
-export default AuthContext;
