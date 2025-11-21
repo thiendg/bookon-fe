@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth.hook";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { UserCircleIcon, ArrowRightOnRectangleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { ArrowRightOnRectangleIcon, Cog6ToothIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 
 const pageClass = (currentPage, pageKey) => {
@@ -11,7 +11,7 @@ const pageClass = (currentPage, pageKey) => {
 }
 
 const BaseHeader = ({ currentPage, adBanner, ...props }) => {
-    const { isAuthenticated, user, logout } = useAuth();
+    const { isAuthenticated, user, logout, isAdmin } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
@@ -52,7 +52,7 @@ const BaseHeader = ({ currentPage, adBanner, ...props }) => {
                 </div>
 
                 <div className="hidden md:flex items-center space-x-2">
-                    <Link className={pageClass(currentPage, "home")} to="/dashboard">Home</Link>
+                    <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
                     <Link className={pageClass(currentPage, "category")} to="/category">Category</Link>
                     <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
                     <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
@@ -81,6 +81,12 @@ const BaseHeader = ({ currentPage, adBanner, ...props }) => {
                                             Signed in as <br />
                                             <strong className="truncate">{user?.email}</strong>
                                         </div>
+                                        {isAdmin && (
+                                             <Link to="/admin" className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-gray-100">
+                                                <ShieldCheckIcon className="h-5 w-5 mr-2" />
+                                                Admin
+                                            </Link>
+                                        )}
                                         <Link to="/profile" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <Cog6ToothIcon className="h-5 w-5 mr-2" />
                                             Profile

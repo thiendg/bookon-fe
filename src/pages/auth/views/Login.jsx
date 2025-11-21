@@ -23,7 +23,7 @@ const Login = () => {
             const result = await login(email, password, rememberMe);
 
             if (result.success) {
-                navigate('/dashboard');
+                navigate('/');
             } else {
                 setError(result.message || 'Login failed. Please check your credentials.');
             }

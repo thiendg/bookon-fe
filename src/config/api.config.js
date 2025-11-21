@@ -11,5 +11,38 @@ export const API_CONFIG = {
         CHECK_AUTH: '/modules/auth/api/check-auth.php',
         FORGOT_PASSWORD: '/modules/auth/api/forgot-password.php',
         RESET_PASSWORD: '/modules/auth/api/reset-password.php',
+
+        // Book endpoints
+        BOOKS: '/modules/books/api/',
+
+        // User endpoints
+        USERS: '/modules/users/api/',
+
+        // Category endpoints
+        CATEGORIES: '/modules/categories/api/',
+
+        // Order endpoints
+        ORDERS: '/modules/orders/api/',
+
+        // Review endpoints
+        REVIEWS: '/modules/reviews/api/',
+
+        // Role endpoints
+        ROLES: '/modules/roles/api/',
+
+        // Post endpoints
+        POSTS: '/modules/posts/api/',
+
+        // Post Comments endpoints
+        POST_COMMENTS: '/modules/post_comments/api/',
+
+        // Settings endpoints
+        SETTINGS: '/modules/settings/api/',
+
+        // Contact endpoints
+        CONTACTS: '/modules/contacts/api/',
+
+        // FAQs endpoints
+        FAQS: '/modules/faqs/api/',
     }
 };

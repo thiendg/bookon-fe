@@ -24,6 +24,7 @@ const ForgotPassword = () => {
             setMessage("If an account with that email exists, we've sent a link to reset your password.");
             setEmail('');
         } catch (err) {
+            console.error("Forgot password error:", err);
             // Even if the API fails, show a generic message to prevent user enumeration
             setMessage("If an account with that email exists, we've sent a link to reset your password.");
         } finally {

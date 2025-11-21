@@ -91,10 +91,15 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
+    const userRole = user ? user.role_name : null;
+    const isAdmin = userRole === 'Admin';
+
     const value = {
         user,
         loading,
         isAuthenticated: !!user,
+        userRole,
+        isAdmin,
         register,
         login,
         logout,
