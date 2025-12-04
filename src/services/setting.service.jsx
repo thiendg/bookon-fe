@@ -4,6 +4,13 @@ import { API_CONFIG } from '@/config/api.config';
 
 export const settingService = {
     /**
+     * Get all settings.
+     */
+    getAllSettings: async () => {
+        return await axiosInstance.get(API_CONFIG.ENDPOINTS.SETTINGS);
+    },
+
+    /**
      * Get a list of settings with optional query parameters.
      * @param {object} params - Optional parameters for pagination and filtering.
      * @param {number} params.page - The page number to retrieve.

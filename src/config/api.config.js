@@ -44,5 +44,14 @@ export const API_CONFIG = {
 
         // FAQs endpoints
         FAQS: '/modules/faqs/api/',
+
+        // Files upload endpoint (backend provides only upload.php)
+        FILES: '/modules/files/api/upload.php',
+
+        // Sessions endpoints
+        SESSIONS: '/modules/sessions/api/',
+
+        // Transactions endpoints
+        TRANSACTIONS: '/modules/transactions/api/',
     }
 };

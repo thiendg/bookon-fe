@@ -1,6 +1,7 @@
 // src/pages/home/views/HomePage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { bookService } from '@/services/book.service';
+import { API_CONFIG } from '@/config/api.config';
 import BasePage from '@/components/BasePage';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
@@ -19,10 +20,19 @@ const useDebounce = (value, delay) => {
 };
 
 const BookCard = ({ book }) => {
-    // A placeholder image if the book has no cover
-    const imageUrl = book.cover_image_url 
-        ? `${import.meta.env.VITE_API_URL}/public/uploads/${book.cover_image_url}`
-        : 'https://source.unsplash.com/random/300x400/?book';
+    const getCoverImageUrl = (cover) => {
+        const base = (API_CONFIG.BASE_URL || import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+        if (!cover) return 'https://source.unsplash.com/random/300x400/?book';
+        if (cover.startsWith('http')) return cover;
+        if (cover.startsWith('/')) return `${base}${cover}`;
+        return `${base}/public/uploads/${cover}`;
+    };
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(amount) || 0);
+    };
+
+    const imageUrl = getCoverImageUrl(book.cover_image_url || book.cover_image || '');
 
     return (
         <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
@@ -31,7 +41,7 @@ const BookCard = ({ book }) => {
                 <h3 className="font-bold text-lg mb-2 truncate">{book.title}</h3>
                 <p className="text-gray-600 text-sm mb-4 flex-grow">{book.author || 'Unknown Author'}</p>
                 <div className="flex justify-between items-center mt-auto">
-                    <span className="text-indigo-600 font-semibold">${parseFloat(book.price).toFixed(2)}</span>
+                    <span className="text-indigo-600 font-semibold">{formatCurrency(book.price)}</span>
                     <button className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
                         Add to Cart
                     </button>
@@ -50,19 +60,33 @@ const HomePage = () => {
     
     const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
+    const _unwrapResponse = (resp) => {
+        if (!resp) return {};
+        if (Array.isArray(resp)) return resp;
+        if (resp.data && (Array.isArray(resp.data) || resp.data.pagination || resp.data.data)) return resp.data;
+        return resp;
+    };
+
     const fetchBooks = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const response = await bookService.getBooks({ search: debouncedSearchTerm });
-            if (response.success) {
-                setBooks(response.data.data || []); // Correctly extract books
-                // You might also want to set pagination state here if Dashboard had pagination
-                // setTotalPages(response.data.pagination.totalPages || 1);
-            } else {
-                throw new Error(response.message || 'Failed to fetch books');
-            }
+            console.log('[HomePage] fetchBooks called, search=', JSON.stringify(debouncedSearchTerm));
+            const params = debouncedSearchTerm ? { search: debouncedSearchTerm } : {};
+            const response = await bookService.getBooks(params);
+            const data = _unwrapResponse(response);
+            // DEBUG: log response shapes to help diagnose missing books (remove in production)
+            console.debug('[HomePage] bookService.getBooks response:', response);
+            let list = [];
+            if (Array.isArray(data)) list = data;
+            else if (Array.isArray(data.data)) list = data.data;
+            else if (response && Array.isArray(response.data)) list = response.data;
+            else if (response && response.success && Array.isArray(response.data)) list = response.data;
+
+            console.debug('normalized book list:', list);
+            setBooks(list);
         } catch (err) {
+            console.error('[HomePage] fetchBooks error:', err);
             setError(err.message || 'An error occurred while fetching books.');
             setBooks([]);
         } finally {
@@ -120,7 +144,7 @@ const HomePage = () => {
                             <p>{error}</p>
                         </div>
                     ) : books.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
                             {books.map(book => (
                                 <BookCard key={book.id} book={book} />
                             ))}

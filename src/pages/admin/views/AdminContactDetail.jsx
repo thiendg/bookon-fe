@@ -10,7 +10,8 @@ import {
     IconMessage,
     IconCheck,
     IconX,
-    IconSend
+    IconSend,
+    IconMailOpened
 } from '@tabler/icons-react';
 
 // Import generic components
@@ -29,6 +30,8 @@ const AdminContactDetail = () => {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [status, setStatus] = useState('');
+    const [replyMessage, setReplyMessage] = useState('');
+    const [sendingReply, setSendingReply] = useState(false);
 
     const CONTACT_STATUS_OPTIONS = [
         { value: 'pending', label: 'Pending' },
@@ -74,7 +77,6 @@ const AdminContactDetail = () => {
         try {
             const updateData = {
                 status: status,
-                // Add fields for response message, etc., if needed
             };
             const response = await contactService.updateContact(id, updateData);
             if (response.success) {
@@ -87,6 +89,37 @@ const AdminContactDetail = () => {
             setError(err.message || 'An error occurred during update.');
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleSendReply = async (e) => {
+        e.preventDefault();
+        if (!replyMessage.trim()) {
+            setError('Please enter a reply message.');
+            return;
+        }
+
+        setSendingReply(true);
+        setError('');
+        setSuccessMessage('');
+
+        try {
+            // This would typically send an email to the contact's email address
+            // For now, we'll update the contact with the reply and change status to "responded"
+            const response = await contactService.updateContact(id, {
+                status: 'responded',
+                reply: replyMessage,
+            });
+            
+            if (response.success) {
+                setSuccessMessage('Reply sent successfully!');
+                setReplyMessage('');
+                fetchContact();
+            } else {
+                throw new Error(response.message || 'Failed to send reply');
+            }
+        } finally {
+            setSendingReply(false);
         }
     };
 
@@ -105,10 +138,16 @@ const AdminContactDetail = () => {
         return (
             <div className="empty">
                 <div className="empty-img">
-                    <IconX className="icon text-danger" style={{ width: '4rem', height: '4rem' }} />
+                    <IconX className="icon" style={{ width: '4rem', height: '4rem' }} />
                 </div>
-                <p className="empty-title text-danger">Error: {error}</p>
-                <p className="empty-subtitle">Could not load contact details. <Link to="/admin/contacts">Go back to Contact List</Link></p>
+                <p className="empty-title">Error</p>
+                <p className="empty-subtitle text-muted">{error}</p>
+                <div className="empty-action">
+                    <Link to="/admin/contacts" className="btn btn-primary">
+                        <IconArrowLeft className="icon me-2" />
+                        Back to Contacts
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -120,7 +159,6 @@ const AdminContactDetail = () => {
                     <IconMail className="icon" style={{ width: '4rem', height: '4rem' }} />
                 </div>
                 <p className="empty-title">Contact not found</p>
-                <p className="empty-subtitle">The contact with ID "{id}" does not exist. <Link to="/admin/contacts">Go back to Contact List</Link></p>
             </div>
         );
     }
@@ -140,10 +178,58 @@ const AdminContactDetail = () => {
                 successMessage={successMessage}
                 submitText="Update Status"
             >
-                <p><strong>Name:</strong> {contact.name}</p>
-                <p><strong>Email:</strong> {contact.email}</p>
-                <p><strong>Message:</strong> {contact.message}</p>
-                <p><strong>Received At:</strong> {new Date(contact.created_at * 1000).toLocaleString()}</p>
+                {/* Contact Information Card */}
+                <div className="card mb-3">
+                    <div className="card-header">
+                        <h3 className="card-title">Contact Information</h3>
+                    </div>
+                    <div className="card-body">
+                        <div className="row mb-2">
+                            <div className="col-md-4"><strong>Name:</strong></div>
+                            <div className="col-md-8">{contact.name}</div>
+                        </div>
+                        <div className="row mb-2">
+                            <div className="col-md-4"><strong>Email:</strong></div>
+                            <div className="col-md-8">
+                                <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                            </div>
+                        </div>
+                        <div className="row mb-2">
+                            <div className="col-md-4"><strong>Subject:</strong></div>
+                            <div className="col-md-8">{contact.subject || 'N/A'}</div>
+                        </div>
+                        <div className="row mb-2">
+                            <div className="col-md-4"><strong>Received At:</strong></div>
+                            <div className="col-md-8">
+                                {new Date(contact.created_at * 1000).toLocaleString()}
+                            </div>
+                        </div>
+                        <div className="row">
+                            <div className="col-md-4"><strong>Message:</strong></div>
+                            <div className="col-md-8">
+                                <div className="card">
+                                    <div className="card-body">
+                                        {contact.message}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Previous Reply (if exists) */}
+                {contact.reply && (
+                    <div className="card mb-3">
+                        <div className="card-header bg-success-lt">
+                            <h3 className="card-title text-success">Previous Reply</h3>
+                        </div>
+                        <div className="card-body">
+                            {contact.reply}
+                        </div>
+                    </div>
+                )}
+
+                {/* Status Update */}
                 <SelectInput
                     label="Status"
                     name="status"
@@ -154,6 +240,36 @@ const AdminContactDetail = () => {
                     icon={IconMailOpened}
                 />
             </AdminForm>
+
+            {/* Reply Form */}
+            {/* Reply Form */}
+            <div className="container-xl mt-4">
+                <div className="card">
+                    <div className="card-header">
+                        <h3 className="card-title">Send Reply</h3>
+                    </div>
+                    <form onSubmit={handleSendReply}>
+                        <div className="card-body">
+                            <div className="mb-3">
+                                <label className="form-label">Reply Message</label>
+                                <textarea
+                                    className="form-control"
+                                    rows="5"
+                                    value={replyMessage}
+                                    onChange={(e) => setReplyMessage(e.target.value)}
+                                    placeholder="Type your reply here..."
+                                />
+                            </div>
+                        </div>
+                        <div className="card-footer">
+                            <button type="submit" className="btn btn-primary" disabled={sendingReply}>
+                                <IconSend className="icon me-2" />
+                                {sendingReply ? 'Sending...' : 'Send Reply'}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </>
     );
 };

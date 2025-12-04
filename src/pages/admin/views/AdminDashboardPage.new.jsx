@@ -21,7 +21,10 @@ const AdminDashboardPage = () => {
         totalUsers: 0,
         totalBooks: 0,
         totalOrders: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
+        newUsersToday: 0,
+        newOrdersToday: 0,
+        pendingOrders: 0,
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -41,26 +44,28 @@ const AdminDashboardPage = () => {
             const [usersResponse, booksResponse, ordersResponse, statsResponse] = await Promise.all([
                 usersService.getUsers({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
                 bookService.getBooks({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
-                orderService.getOrders({ limit: 10, sortBy: 'created_at', sortOrder: 'ASC' }).catch(() => ({ data: [] })),
+                orderService.getOrders({ limit: 10, sortBy: 'created_at', sortOrder: 'DESC' }).catch(() => ({ data: [] })),
                 dashboardService.getStats().catch(() => ({ data: {} })),
             ]);
 
             // Calculate stats
             const calculatedStats = {
-                totalUsers: usersResponse?.totalItem || 0,
-                totalBooks: booksResponse?.totalItem || 0,
-                totalOrders: ordersResponse?.data.total || ordersResponse.data?.length || 0,
-                totalRevenue: statsResponse.data?.totalRevenue || 0
+                totalUsers: usersResponse.pagination?.totalItems || 0,
+                totalBooks: booksResponse.pagination?.totalItems || 0,
+                totalOrders: ordersResponse.pagination?.totalItems || ordersResponse.data?.length || 0,
+                totalRevenue: statsResponse.data?.totalRevenue || 0,
+                newUsersToday: statsResponse.data?.newUsersToday || 0,
+                newOrdersToday: statsResponse.data?.newOrdersToday || 0,
+                pendingOrders: statsResponse.data?.pendingOrders || 0,
             };
-            console.log(calculatedStats);
+
             setStats(calculatedStats);
-            setRecentOrders(ordersResponse.data?.posts.slice(0, 5) || []);
+            //setRecentOrders(ordersResponse.data?.slice(0, 5) || []);
+            console.log('Recent Orders:', ordersResponse);
+
             // Fetch top books
             const topBooksResponse = await dashboardService.getTopBooks(5).catch(() => ({ data: [] }));
-            // Normalize response to ensure an array is always stored in state
-            const tb = topBooksResponse?.data;
-            const normalizedTopBooks = Array.isArray(tb) ? tb : (tb?.data || []);
-            setTopBooks(normalizedTopBooks);
+            setTopBooks(topBooksResponse.data || []);
 
         } catch (err) {
             setError(err.message || 'Failed to load dashboard data');
@@ -294,7 +299,7 @@ const AdminDashboardPage = () => {
                                     </div>
                                 </div>
                                 <div className="card-body">
-                                    {(!Array.isArray(topBooks) || topBooks.length === 0) ? (
+                                    {topBooks.length === 0 ? (
                                         <div className="empty">
                                             <p className="empty-title">No sales data yet</p>
                                         </div>
