@@ -3,14 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { ArrowRightOnRectangleIcon, Cog6ToothIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
-
 const pageClass = (currentPage, pageKey) => {
     if (currentPage === pageKey)
-        return "rounded-lg bg-[#82DECD] py-2 px-4 cursor-default text-gray-800 font-semibold";
-    return "cursor-pointer hover:bg-[#a1e9da] rounded-lg py-2 px-4 text-gray-600 hover:text-gray-800 transition-colors duration-200";
+        return "rounded-4xl bg-[#399d78] py-2 px-4 cursor-default text-teal-50! no-underline!";
+    return "cursor-pointer hover:bg-[#399d78] hover:text-teal-50! rounded-4xl py-2 px-4 text-teal-700! no-underline!";
 }
 
-const BaseHeader = ({ currentPage, adBanner, ...props }) => {
+const BaseHeader = ({ currentPage, settingData, ...props }) => {
     const { isAuthenticated, user, logout, isAdmin } = useAuth();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
@@ -34,80 +33,76 @@ const BaseHeader = ({ currentPage, adBanner, ...props }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [dropdownRef]);
-
-
-    return <header className="sticky z-50 top-0 bg-white/80 backdrop-blur-md shadow-sm" {...props}>
-        {adBanner && (
-            <div className="bg-[#52786F] h-max w-full text-white text-center font-semibold text-xs py-2">
-                {adBanner}
+    return <header className="sticky z-50 top-0 bg-linear-to-r bg-white/97 shadow-2xs" {...props}>
+        {settingData.adBanner && <div className="bg-[#52786F] h-max w-full text-white text-center font-semibold text-shadow-2xs py-2">
+            {settingData.adBanner}
+        </div>}
+        <nav className="grid grid-cols-12 min-h-15 w-full">
+            <div className="col-span-2 flex justify-end items-center px-10 py-4">
+                <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
+                    <img src="/bookon-logo.png" className="max-w-30" />
+                    {settingData.siteName}
+                </Link>
             </div>
-        )}
-        <nav className="container mx-auto px-6 py-3">
-            <div className="flex justify-between items-center">
-                <div className="flex items-center">
-                    <Link to="/" className="text-2xl font-bold text-gray-800 flex items-center">
-                        <img src="/bookon-logo.png" alt="BookOn Logo" className="h-8 w-auto mr-2" />
-                        BookOn
-                    </Link>
-                </div>
 
-                <div className="hidden md:flex items-center space-x-2">
-                    <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
-                    <Link className={pageClass(currentPage, "category")} to="/category">Category</Link>
-                    <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
-                    <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
-                    <Link className={pageClass(currentPage, "faq")} to="/faq">FAQ</Link>
-                </div>
+            <div className="col-span-7 max-w-550 gap-x-12 flex justify-center items-center font-semibold text-shadow-2xs">
+                <Link className={pageClass(currentPage, "home")} to="/home">Home</Link>
+                <Link className={pageClass(currentPage, "category")} to="/category">Category</Link>
+                <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
+                <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
+                <Link className={pageClass(currentPage, "faq")} to="/faq">FAQ</Link>
+            </div>
 
-                <div className="flex items-center space-x-4">
-                    <Link to="/contact" className="p-2 rounded-full hover:bg-gray-200">
-                        <img src="/contact.png" alt="Contact" className="h-6 w-6" />
-                    </Link>
-                    <Link to="/cart" className="p-2 rounded-full hover:bg-gray-200">
-                        <img src="/shopping-cart.png" alt="Shopping Cart" className="h-6 w-6" />
-                    </Link>
+            <div className="col-span-3 h-full flex justify-end items-center gap-x-2 pr-10">
+                <Link to="/contact" className={pageClass(currentPage, "contact")}>
+                    <img src="/contact.png" className="max-w-8" />
+                </Link>
+                <Link to="/cart" className={pageClass(currentPage, "cart")}>
+                    <img src="/shopping-cart.png" className="max-w-8" />
+                </Link>
 
-                    <div className="relative" ref={dropdownRef}>
-                        {isAuthenticated ? (
-                            <>
-                                <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 p-2 rounded-full bg-gray-100 hover:bg-gray-200 focus:outline-none">
-                                    <span className="font-semibold text-sm text-gray-700 hidden sm:block">{user?.full_name || 'User'}</span>
-                                    <img src={user?.avatar_url || '/user-avatar.png'} alt="User Avatar" className="h-8 w-8 rounded-full" />
-                                </button>
+                <div className="relative flex gap-x-2 rounded-4xlpy-2 px-4 cursor-pointer items-center">
+                    {isAuthenticated ? <>
+                        <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 p-2 rounded-full bg-[#05EAC0] hover:bg-[#5fe1c9] focus:outline-none">
+                            <span className="font-semibold text-sm text-gray-700 hidden sm:block">{user?.full_name || 'User'}</span>
+                            <img src={user?.avatar_url || '/user-avatar.png'} alt="User Avatar" className="h-8 w-8 rounded-full" />
+                        </button>
 
-                                {dropdownOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 py-1 border border-gray-200">
-                                        <div className="px-4 py-2 text-sm text-gray-700 border-b">
-                                            Signed in as <br />
-                                            <strong className="truncate">{user?.email}</strong>
-                                        </div>
-                                        {isAdmin && (
-                                             <Link to="/admin" className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-gray-100">
-                                                <ShieldCheckIcon className="h-5 w-5 mr-2" />
-                                                Admin
-                                            </Link>
-                                        )}
-                                        <Link to="/profile" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            <Cog6ToothIcon className="h-5 w-5 mr-2" />
-                                            Profile
-                                        </Link>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                                        >
-                                            <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
-                                            Logout
-                                        </button>
-                                    </div>
+                        {dropdownOpen && (
+                            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-xl z-20 py-1 border border-gray-200">
+                                <div className="px-2 py-2 text-sm text-gray-700 border-b">
+                                    Signed in as <br />
+                                    <strong className="truncate">{user?.email}</strong>
+                                </div>
+                                {isAdmin && (
+                                    <Link to="/admin" className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-gray-100">
+                                        <ShieldCheckIcon className="h-5 w-5 mr-2" />
+                                        Admin
+                                    </Link>
                                 )}
-                            </>
-                        ) : (
-                            <div className="flex items-center space-x-2">
-                                <Link to="/login" className="px-4 py-2 text-sm font-semibold text-gray-700 rounded-lg hover:bg-gray-100">Login</Link>
-                                <Link to="/register" className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">Register</Link>
+                                <Link to="/profile" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <Cog6ToothIcon className="h-5 w-5 mr-2" />
+                                    Profile
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                                >
+                                    <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                                    Logout
+                                </button>
                             </div>
                         )}
-                    </div>
+                    </> :
+                        <div className="flex items-center space-x-2">
+                            <Link to="/login" className="px-4 py-2 text-sm font-semibold text-[#2C5F2D]! rounded-lg hover:bg-teal-100 no-underline!">
+                                Login
+                            </Link>
+                            <Link to="/register" className="px-4 py-2 text-sm font-semibold bg-[#399d78] text-white rounded-lg no-underline! hover:bg-[#65c29f]">
+                                Register
+                            </Link>
+                        </div>
+                    }
                 </div>
             </div>
         </nav>

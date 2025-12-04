@@ -5,13 +5,49 @@ import BaseHeader from "./Header";
 
 export default function BasePage({ title, children, currentPage = "home", ...props }) {
     const settingsData = {
-        adBanner: "🎄Xmas coming! New books for Christmas have arrived! 🎄"
+        adBanner: "🎄Xmas coming! New books for Christmas have arrived! 🎄",
+        siteName: "BookOn",
+        address: "HCM University of Technology",
+        phone: "0123 456 789",
+        email: "support@bookon.com",
+        facebook: "www.facebook.com",
+        twitter: "www.twitter.com",
+        instagram: "www.instagram.com"
     }; // getPage Settings here
 
-    // Remove useEffect for document.title, Helmet will handle it
-    // useEffect(() => {
-    //     document.title = title ? `${title} | BookOn` : "BookOn";
-    // }, [title]);
+    const categories = [
+        {
+            name: "Fantasy",
+            slug: 'fantasy'
+        },
+        {
+            name: "Horror",
+            slug: 'horror'
+        },
+        {
+            name: "Romance",
+            slug: 'romance'
+        },
+        {
+            name: "Sci-Fi",
+            slug: 'sci-fi'
+        }
+    ]; // Fetch from back-end later
+
+    const recommendations = [
+        {
+            title: "The best book ever",
+            slug: "the-best-book-ever"
+        },
+        {
+            title: "Thrilling experience",
+            slug: "thrilling-experience"
+        },
+        {
+            title: "No way it is at this reasonable price! I can not believe I can buy my favorite book at this reasonable price!",
+            slug: "no-way-it-is-this-reasonable"
+        }
+    ]; // Fetch from back-end later
 
     return (
         <div className="sticky z-50 w-full h-full bg-linear-to-r from-[#E5FFF9] via-[#FFFFFF] to-[#E5FFF9]" {...props}>
@@ -21,10 +57,14 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
             </Helmet>
             <BaseHeader
                 currentPage={currentPage}
-                adBanner={settingsData.adBanner}
+                settingData={settingsData}
             />
             {children}
-            <BaseFooter />
+            <BaseFooter
+                settingData={settingsData}
+                categories={categories}
+                recommendations={recommendations}
+            />
         </div>
     );
 }
