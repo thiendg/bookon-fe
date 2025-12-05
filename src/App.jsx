@@ -9,13 +9,14 @@ import ProtectedRoute from './pages/auth/views/ProtectedRoute';
 import Register from './pages/auth/views/Register';
 import ResetPassword from './pages/auth/views/ResetPassword';
 import VerifyEmail from './pages/auth/views/VerifyEmail';
+import Dashboard from "./pages/home/views/Dashboard";
 
 // Home/Public Views
 import HomePage from './pages/home/views/HomePage';
-import BookDetailsPage from './pages/home/views/BookDetailsPage';
+// import BookDetailsPage from './pages/home/views/BookDetailsPage';
 import CategoryList from './pages/home/views/CategoryList';
 import CategoryBooks from './pages/home/views/CategoryBooks';
-import CartPage from './pages/home/views/CartPage'; // Assuming this is also a public route for now
+// import CartPage from './pages/home/views/CartPage'; // Assuming this is also a public route for now
 import ProfilePage from './pages/home/views/ProfilePage'; // For authenticated user profile
 import OrderList from './pages/home/views/OrderList'; // Import OrderList
 import OrderDetailsPage from './pages/home/views/OrderDetailsPage'; // Import OrderDetailsPage
@@ -65,12 +66,73 @@ import FaqPage from './pages/home/views/FaqPage'; // Import FaqPage
 import PostListPage from './pages/home/views/PostListPage';
 import PostDetailPage from './pages/home/views/PostDetailPage';
 
+import { CartProvider } from '@/hooks/useCart';
+import StoreBookList from './pages/store/views/BookList';
+import StoreBookDetail from './pages/store/views/BookDetail';
+import StoreCartPage from './pages/store/views/CartPage';
+import AdminBooks from './pages/admin/views/AdminBooks';
+import AdminOrders from './pages/admin/views/AdminOrders';
 
 
 function App() {
   return (
     <Router>
       <AuthProvider>
+        <CartProvider>
+          <div className="App">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+              {/*các route cho phần #3 */}
+              <Route path="/home" element={<StoreBookList />} />
+              <Route path="/books" element={<StoreBookList />} />
+              <Route path="/books/:id" element={<StoreBookDetail />} />
+              <Route path="/cart" element={<StoreCartPage />} />
+
+              {/* Auth routes cũ */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+              {/* Protected Routes */}
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/*  admin quản lý sản phẩm */}
+              <Route
+                path="/admin/books"
+                element={
+                  <ProtectedRoute>
+                    <AdminBooks />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/*  admin quản lý đơn hàng */}
+              <Route
+                path="/admin/orders"
+                element={
+                  <ProtectedRoute>
+                    <AdminOrders />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* 404 */}
+              <Route path="*" element={<div>404 - Page Not Found</div>} />
+            </Routes>
+          </div>
+        </CartProvider>
         <div className="App">
           <Routes>
             {/* Public Routes */}
@@ -81,10 +143,10 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/books/:id" element={<BookDetailsPage />} />
+            {/* <Route path="/books/:id" element={<BookDetailsPage />} /> */}
             <Route path="/categories" element={<CategoryList />} />
             <Route path="/categories/:categoryId" element={<CategoryBooks />} />
-            <Route path="/cart" element={<CartPage />} />
+            {/* <Route path="/cart" element={<CartPage />} /> */}
             <Route path="/posts" element={<PostListPage />} /> {/* New route for Public Post List Page */}
             <Route path="/posts/:id" element={<PostDetailPage />} /> {/* New route for Public Post Detail Page */}
 
