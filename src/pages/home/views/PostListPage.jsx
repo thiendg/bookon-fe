@@ -111,13 +111,24 @@ const PostListPage = () => {
                         <Link to="/" className="mt-4 inline-block text-indigo-600 hover:text-indigo-800">Back to homepage</Link>
                     </div>
                 ) : posts.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-4">
                         {posts.map(post => (
-                            <Link key={post.id} to={`/posts/${post.id}`} className="block bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200">
-                                <div className="p-4">
-                                    <h2 className="text-xl font-bold text-gray-900 mb-2">{post.title}</h2>
-                                    <p className="text-gray-600 text-sm mb-3 line-clamp-3">{post.content}</p> {/* Displaying content, maybe excerpt instead */}
-                                    <small className="text-muted">By User {post.user_id} on {new Date(post.created_at * 1000).toLocaleDateString()}</small>
+                            <Link
+                                key={post.id}
+                                to={`/posts/${post.id}`}
+                                className="flex items-start gap-4 bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+                            >
+                                <div className="w-28 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                                    {post.thumbnail ? (
+                                        <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h2 className="text-lg font-semibold text-gray-900 mb-1 truncate">{post.title}</h2>
+                                    <p className="text-gray-600 mb-2 text-sm">{(post.content || '').length > 220 ? `${(post.content || '').slice(0, 220).replace(/\n/g, ' ')}...` : (post.content || '')}</p>
+                                    <div className="text-sm text-gray-500">By User {post.user_id} • {post.created_at ? new Date(post.created_at * 1000).toLocaleDateString() : 'N/A'}</div>
                                 </div>
                             </Link>
                         ))}

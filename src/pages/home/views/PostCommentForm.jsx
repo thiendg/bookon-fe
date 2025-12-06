@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { postCommentService } from '@/services/postComment.service';
 import { useAuth } from '@/hooks/useAuth.hook';
+import { Link } from 'react-router-dom';
 import { IconSend } from '@tabler/icons-react';
 
 const PostCommentForm = ({ postId, onCommentAdded }) => {
@@ -33,7 +34,7 @@ const PostCommentForm = ({ postId, onCommentAdded }) => {
             const commentData = {
                 post_id: postId,
                 user_id: user.id,
-                comment_text: commentText,
+                content: commentText,
             };
             const response = await postCommentService.createPostComment(commentData);
             if (response.success) {
