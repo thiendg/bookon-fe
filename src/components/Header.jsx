@@ -40,7 +40,7 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
         <nav className="grid grid-cols-12 min-h-15 w-full">
             <div className="col-span-2 flex justify-end items-center px-10 py-4">
                 <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
-                    <img src="/bookon-logo.png" className="max-w-30" />
+                    <img src={settingData.logoUrl || '/bookon-logo.png'} className="max-w-30" />
                     {settingData.siteName}
                 </Link>
             </div>

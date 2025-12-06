@@ -117,7 +117,7 @@ const AdminReviewDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit Review: {review.id} | Admin - BookOn</title>
+                <title>{`Edit Review: ${review?.id ?? ''} | Admin - BookOn`}</title>
             </Helmet>
             <div className="container-xl">
                 <div className="page-header d-print-none">

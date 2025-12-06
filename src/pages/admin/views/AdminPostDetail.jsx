@@ -144,7 +144,7 @@ const AdminPostDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit Post: {post.title} | Admin - BookOn</title>
+                <title>{`Edit Post: ${post?.title || ''} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit Post: ${post.title}`}

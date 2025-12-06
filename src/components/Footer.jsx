@@ -6,12 +6,12 @@ const BaseFooter = ({ settingData, categories, recommendations, ...props }) => {
         <div className="col-span-4 py-4 px-10">
             <div className="flex justify-start items-center">
                 <Link to="/" className="text-2xl font-bold flex items-center text-black gap-x-2 no-underline!">
-                    <img src="/bookon-logo.png" className="max-w-30" />
+                    <img src={settingData.logoUrl || '/bookon-logo.png'} className="max-w-30" />
                     {settingData.siteName}
                 </Link>
             </div>
             <div className="mt-2 *:hover:underline *:cursor-pointer *:hover:text-teal-700">
-                <span className="font-bold">Address</span> : <a href={`https://www.google.com/maps/search/${settingData.address}}`}>{settingData.address}</a>
+                <span className="font-bold">Address</span> : <a href={`https://www.google.com/maps/search/${settingData.address}`}>{settingData.address}</a>
                 <br />
                 <span className="font-bold">Phone</span> : {settingData.phone}
                 <br />

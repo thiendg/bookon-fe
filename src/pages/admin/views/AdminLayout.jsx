@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import AdminSidebarComponent from '@/components/admin/AdminSidebarComponent';
+import { settingService } from '@/services/setting.service';
 
 const AdminLayout = () => {
+  const [logoUrl, setLogoUrl] = useState('/bookon-logo.png');
+
   useEffect(() => {
     // Dynamically load Tabler's theme script if not already loaded
     // This part assumes that tabler.min.js (which includes tabler-theme.min.js behavior)
@@ -13,6 +16,23 @@ const AdminLayout = () => {
     // Also need to handle dynamic loading of the js for charts and maps
     // These scripts are currently outside React's lifecycle.
     // I'll manage these in AdminDashboardPage.jsx where the charts are actually rendered.
+  }, []);
+
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const resp = await settingService.getAllSettings();
+        if (resp && resp.success) {
+          const items = resp.data.posts || resp.data || [];
+          const map = {};
+          items.forEach(it => { if (it && it.setting_key) map[it.setting_key] = it.setting_value; });
+          if (map.company_logo_url) setLogoUrl(`${import.meta.env.VITE_API_URL}${map.company_logo_url}`);
+        }
+      } catch (err) {
+        // ignore and keep default logo
+      }
+    };
+    loadLogo();
   }, []);
 
   return (
@@ -31,7 +51,7 @@ const AdminLayout = () => {
           <div className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <Link to="/admin" aria-label="BookOn Admin">
               <img
-                src="/bookon-logo.png" // Using the logo from public folder
+                src={logoUrl}
                 width="110"
                 height="32"
                 alt="BookOn"

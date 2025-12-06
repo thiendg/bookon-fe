@@ -163,11 +163,15 @@ const AdminContactDetail = () => {
         );
     }
 
+    const receivedAtString = contact && contact.created_at ? new Date(Number(contact.created_at) * 1000).toLocaleString() : 'Unknown';
+
     return (
         <>
-            <Helmet>
-                <title>Contact #{contact.id} Details | Admin - BookOn</title>
-            </Helmet>
+            {contact && (
+                <Helmet>
+                    <title>{`Contact #${contact.id ?? 'N/A'} Details | Admin - BookOn`}</title>
+                </Helmet>
+            )}
             <AdminForm
                 title={`Contact Message #${contact.id}`}
                 backLink="/admin/contacts"
@@ -201,7 +205,7 @@ const AdminContactDetail = () => {
                         <div className="row mb-2">
                             <div className="col-md-4"><strong>Received At:</strong></div>
                             <div className="col-md-8">
-                                {new Date(contact.created_at * 1000).toLocaleString()}
+                                {receivedAtString}
                             </div>
                         </div>
                         <div className="row">

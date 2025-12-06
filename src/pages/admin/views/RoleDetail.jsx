@@ -139,7 +139,7 @@ const RoleDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit Role: {role.name} | Admin - BookOn</title>
+                <title>{`Edit Role: ${role?.name || ''} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit Role: ${role.name}`}

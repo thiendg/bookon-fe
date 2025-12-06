@@ -138,7 +138,7 @@ const AdminFaqDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit FAQ: {faq.question} | Admin - BookOn</title>
+                <title>{`Edit FAQ: ${faq?.question || ''} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit FAQ: ${faq.id}`}

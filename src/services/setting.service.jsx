@@ -35,7 +35,23 @@ export const settingService = {
      * @param {Object} settingData - Data for the new setting (setting_key, setting_value).
      */
     createSetting: async (settingData) => {
-        return await axiosInstance.post(API_CONFIG.ENDPOINTS.SETTINGS, settingData);
+        // Use FormData to support file uploads or array values if provided
+        const formData = new FormData();
+        for (const key in settingData) {
+            if (Object.prototype.hasOwnProperty.call(settingData, key)) {
+                if (Array.isArray(settingData[key])) {
+                    settingData[key].forEach(item => formData.append(`${key}[]`, item));
+                } else {
+                    formData.append(key, settingData[key]);
+                }
+            }
+        }
+
+        return await axiosInstance.post(API_CONFIG.ENDPOINTS.SETTINGS, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
     },
 
     /**
@@ -44,7 +60,23 @@ export const settingService = {
      * @param {Object} settingData - Data for the setting update (setting_value).
      */
     updateSetting: async (idOrKey, settingData) => {
-        return await axiosInstance.put(`${API_CONFIG.ENDPOINTS.SETTINGS}?id=${idOrKey}`, settingData);
+        // Use FormData to support file uploads or array values and use method override for PUT
+        const formData = new FormData();
+        for (const key in settingData) {
+            if (Object.prototype.hasOwnProperty.call(settingData, key)) {
+                if (Array.isArray(settingData[key])) {
+                    settingData[key].forEach(item => formData.append(`${key}[]`, item));
+                } else {
+                    formData.append(key, settingData[key]);
+                }
+            }
+        }
+
+        return await axiosInstance.post(`${API_CONFIG.ENDPOINTS.SETTINGS}?id=${idOrKey}`, formData, {
+            headers: {
+                'X-HTTP-Method-Override': 'PUT',
+            },
+        });
     },
 
     /**
