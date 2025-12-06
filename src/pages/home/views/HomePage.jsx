@@ -25,7 +25,7 @@ const BookCard = ({ book }) => {
         if (!cover) return 'https://source.unsplash.com/random/300x400/?book';
         if (cover.startsWith('http')) return cover;
         if (cover.startsWith('/')) return `${base}${cover}`;
-        return `${base}/public/uploads/${cover}`;
+        return `${base}/${cover}`;
     };
 
     const formatCurrency = (amount) => {

@@ -40,7 +40,7 @@ const BookDetailsPage = () => {
     };
 
     const imageUrl = book?.cover_image_url
-        ? `${import.meta.env.VITE_API_URL}/public/uploads/${book.cover_image_url}`
+        ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}`
         : 'https://source.unsplash.com/random/300x400/?book';
 
     return (

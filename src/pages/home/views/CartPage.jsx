@@ -108,7 +108,7 @@ const CartPage = () => {
                                                 <tr key={item.id}>
                                                     <td>
                                                         <div className="d-flex align-items-center">
-                                                            <span className="avatar me-3 rounded" style={{ backgroundImage: `url(${item.cover_image_url ? `${import.meta.env.VITE_API_URL}/public/uploads/${item.cover_image_url}` : 'https://source.unsplash.com/random/50x70/?book'})` }}></span>
+                                                            <span className="avatar me-3 rounded" style={{ backgroundImage: `url(${item.cover_image_url ? `${import.meta.env.VITE_API_URL}/${item.cover_image_url}` : 'https://source.unsplash.com/random/50x70/?book'})` }}></span>
                                                             <div>
                                                                 <p className="m-0 text-truncate">{item.title}</p>
                                                                 <small className="text-muted">{item.author}</small>

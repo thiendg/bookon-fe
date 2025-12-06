@@ -280,7 +280,7 @@ const BookDetail = () => {
                     label="Cover Image"
                     name="cover_image"
                     onChange={handleFileChange}
-                    currentImageUrl={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/public/uploads/${book.cover_image_url}` : null}
+                    currentImageUrl={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null}
                     smallText="Upload a new image to replace the current cover."
                 />
             </AdminForm>

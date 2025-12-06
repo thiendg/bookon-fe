@@ -50,7 +50,7 @@ const AdminOrderList = () => {
             };
             const response = await orderService.getOrders(params);
             if (response.success) {
-                setOrders(response.data.orders || []); // Backend returns 'orders', 'total', 'page', 'limit'
+                setOrders(response.data.posts || []); // Backend returns 'orders', 'total', 'page', 'limit'
                 setTotalPages(Math.ceil(response.data.total / limit) || 1);
                 setTotalItems(response.data.total || 0);
             } else {

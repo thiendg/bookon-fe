@@ -102,7 +102,7 @@ const AdminOrderDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Order #{order.id} Details | Admin - BookOn</title>
+                <title>{`Order #${order.id} Details | Admin - BookOn`}</title>
             </Helmet>
             <div className="container-xl">
                 <div className="page-header d-print-none">
@@ -145,14 +145,14 @@ const AdminOrderDetail = () => {
                             )}
                             <p><strong>Order ID:</strong> {order.id}</p>
                             <p><strong>Customer ID:</strong> {order.user_id}</p>
-                            <p><strong>Total Amount:</strong> ${parseFloat(order.total_amount).toFixed(2)}</p>
+                            <p><strong>Total Amount:</strong> ${order.total_amount ? parseFloat(order.total_amount).toFixed(2) : '0.00'}</p>
                             <p><strong>Status:</strong> <span className={`badge bg-${
                                 order.status === 'completed' ? 'success' :
                                 order.status === 'pending' ? 'warning' :
                                 'danger'
                             }`}>{order.status}</span></p>
-                            <p><strong>Order Date:</strong> {new Date(order.created_at * 1000).toLocaleString()}</p>
-                            <p><strong>Last Updated:</strong> {new Date(order.updated_at * 1000).toLocaleString()}</p>
+                            <p><strong>Order Date:</strong> {order.created_at ? new Date(order.created_at * 1000).toLocaleString() : 'N/A'}</p>
+                            <p><strong>Last Updated:</strong> {order.updated_at ? new Date(order.updated_at * 1000).toLocaleString() : 'N/A'}</p>
                             {/* Add more details like shipping address, payment info etc. */}
                         </div>
                     </div>
