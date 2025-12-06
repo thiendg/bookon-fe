@@ -46,11 +46,12 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
             </div>
 
             <div className="col-span-7 max-w-550 gap-x-12 flex justify-center items-center font-semibold text-shadow-2xs">
-                <Link className={pageClass(currentPage, "home")} to="/home">Home</Link>
-                <Link className={pageClass(currentPage, "category")} to="/category">Category</Link>
+                <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
+                <Link className={pageClass(currentPage, "category")} to="/categories">Category</Link>
+                <Link className={pageClass(currentPage, "posts")} to="/posts">Posts</Link>
                 <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
                 <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
-                <Link className={pageClass(currentPage, "faq")} to="/faq">FAQ</Link>
+                <Link className={pageClass(currentPage, "faq")} to="/faqs">FAQ</Link>
             </div>
 
             <div className="col-span-3 h-full flex justify-end items-center gap-x-2 pr-10">

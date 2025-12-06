@@ -76,7 +76,7 @@ const PostDetailPage = () => {
     return (
         <BasePage title={post.title}>
             <Helmet>
-                <meta name="description" content={post.content.substring(0, 160)} />
+                <meta name="description" content={post.content ? post.content.substring(0, 160) : ''} />
             </Helmet>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <Link to="/posts" className="btn btn-ghost d-none d-sm-inline-block mb-4">
