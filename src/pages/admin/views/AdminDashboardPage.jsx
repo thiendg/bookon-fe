@@ -14,6 +14,8 @@ import {
     IconTrendingUp,
     IconTrendingDown,
     IconRefresh,
+    IconMessage,
+    IconSettings,
 } from '@tabler/icons-react';
 
 const AdminDashboardPage = () => {
@@ -367,14 +369,20 @@ const AdminDashboardPage = () => {
                                         </div>
                                         <div className="col-6 col-sm-4 col-md-2">
                                             <Link to="/admin/settings" className="btn btn-white w-100">
-                                                <IconCurrencyDollar className="icon mb-2" />
+                                                <IconSettings className="icon mb-2" />
                                                 <div>Settings</div>
                                             </Link>
                                         </div>
                                         <div className="col-6 col-sm-4 col-md-2">
-                                            <Link to="/admin/contacts" className="btn btn-white w-100">
+                                            <Link to="/admin/posts" className="btn btn-white w-100">
                                                 <IconUsers className="icon mb-2" />
-                                                <div>Messages</div>
+                                                <div>Posts</div>
+                                            </Link>
+                                        </div>
+                                        <div className="col-6 col-sm-4 col-md-2">
+                                            <Link to="/admin/contacts" className="btn btn-white w-100">
+                                                <IconMessage className="icon mb-2" />
+                                                <div>Message</div>
                                             </Link>
                                         </div>
                                     </div>

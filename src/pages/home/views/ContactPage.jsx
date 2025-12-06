@@ -5,6 +5,7 @@ import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
 import { IconMail, IconUser, IconMessage, IconSend } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
+import { useSettings } from '@/context/SettingsContext';
 
 const ContactPage = () => {
     const [formData, setFormData] = useState({
@@ -136,13 +137,20 @@ const ContactPage = () => {
                     </div>
                 </div>
 
-                <div className="text-center mt-5 text-muted">
-                    <p>Alternatively, you can reach us at support@bookon.com</p>
-                    <p>Or call us at +123 456 7890</p>
-                </div>
+                <ContactInfo />
             </div>
         </BasePage>
     );
 };
 
 export default ContactPage;
+
+const ContactInfo = () => {
+    const settings = useSettings();
+    return (
+        <div className="text-center mt-5 text-muted">
+            <p>Alternatively, you can reach us at {settings.email || 'support@bookon.com'}</p>
+            <p>Or call us at {settings.phone || '+123 456 7890'}</p>
+        </div>
+    );
+};

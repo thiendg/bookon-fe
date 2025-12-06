@@ -50,7 +50,7 @@ const AdminContactList = () => {
             const response = await contactService.getContacts(params);
             if (response.success) {
                 // Backend returns 'contacts', 'total', 'page', 'limit'
-                setContacts(response.data.contacts || []);
+                setContacts(response.data.data || []);
                 setTotalPages(Math.ceil(response.data.total / limit) || 1);
                 setTotalItems(response.data.total || 0);
             } else {

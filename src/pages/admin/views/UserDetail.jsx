@@ -150,7 +150,7 @@ const UserDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit User: {user.full_name} | Admin - BookOn</title>
+                <title>{`Edit User: ${user?.full_name || 'User'} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit User: ${user.full_name}`}

@@ -174,7 +174,7 @@ const BookDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit Book: {book.title} | Admin - BookOn</title>
+                <title>{`Edit Book: ${book?.title || ''} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit Book: ${book.title}`}

@@ -113,7 +113,7 @@ const AdminCategoryDetail = () => {
     return (
         <>
             <Helmet>
-                <title>Edit Category: {category.name} | Admin - BookOn</title>
+                <title>{`Edit Category: ${category?.name || ''} | Admin - BookOn`}</title>
             </Helmet>
             <AdminForm
                 title={`Edit Category: ${category.name}`}

@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { settingService } from '@/services/setting.service';
+import { fileService } from '@/services/file.service';
 import { Helmet } from 'react-helmet-async';
 import {
     IconArrowLeft,
@@ -17,6 +18,7 @@ import {
 
 // Import generic components
 import TextInput from '@/components/admin/TextInput';
+import ImageUploadInput from '@/components/admin/ImageUploadInput';
 
 
 const AdminSettingDetail = () => {
@@ -27,7 +29,9 @@ const AdminSettingDetail = () => {
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [editingSettings, setEditingSettings] = useState({});
-    const [newSetting, setNewSetting] = useState({ key: '', value: '' });
+    const [fileInputs, setFileInputs] = useState({}); // store File objects for existing settings
+    const [newSetting, setNewSetting] = useState({ key: '', value: '', type: 'text' });
+    const [newSettingFile, setNewSettingFile] = useState(null);
     const [showAddForm, setShowAddForm] = useState(false);
 
     const fetchSettings = useCallback(async () => {
@@ -36,14 +40,18 @@ const AdminSettingDetail = () => {
         try {
             const response = await settingService.getAllSettings();
             if (response.success) {
-                const settingsData = response.data || [];
+                const settingsData = response.data.data || [];
                 setSettings(settingsData);
+                console.log("Fetched settings:", settingsData);
                 // Initialize editing state for all settings
                 const editState = {};
                 settingsData.forEach(setting => {
-                    editState[setting.id] = {
+                    // Use setting_key as the unique identifier (DB may not have numeric id)
+                    const key = setting.setting_key;
+                    editState[key] = {
                         setting_key: setting.setting_key,
                         setting_value: setting.setting_value,
+                        setting_type: setting.setting_type || 'text',
                     };
                 });
                 setEditingSettings(editState);
@@ -72,26 +80,82 @@ const AdminSettingDetail = () => {
         }));
     };
 
+    const handleExistingFileChange = (id, file) => {
+        setFileInputs(prev => ({ ...prev, [id]: file }));
+    };
+
     const handleUpdateSetting = async (id) => {
         setSubmitting(true);
         setError('');
         setSuccessMessage('');
 
         const settingData = editingSettings[id];
-        if (!settingData.setting_key.trim() || !settingData.setting_value.trim()) {
-            setError('Setting key and value are required.');
+        if (!settingData.setting_key.trim()) {
+            setError('Setting key is required.');
             setSubmitting(false);
             return;
         }
 
         try {
-            const response = await settingService.updateSetting(id, settingData);
-            if (response.success) {
-                setSuccessMessage(`Setting "${settingData.setting_key}" updated successfully!`);
-                fetchSettings();
-                setTimeout(() => setSuccessMessage(''), 3000);
+            // If this setting is a file type and a new file has been selected, upload it first
+            if (settingData.setting_type === 'file') {
+                const file = fileInputs[id];
+                if (file) {
+                    const uploadResp = await fileService.uploadFile(file, { context: 'setting', key: settingData.setting_key });
+                    if (uploadResp.success) {
+                        const filePath = uploadResp.data?.file_path || uploadResp.data?.path || uploadResp.data;
+                        const payload = {
+                            setting_key: settingData.setting_key,
+                            setting_value: filePath,
+                            setting_type: 'file',
+                        };
+                        const response = await settingService.updateSetting(id, payload);
+                        if (response.success) {
+                            setSuccessMessage(`Setting "${settingData.setting_key}" updated successfully!`);
+                            fetchSettings();
+                            setTimeout(() => setSuccessMessage(''), 3000);
+                        } else {
+                            throw new Error(response.message || 'Failed to update setting');
+                        }
+                    } else {
+                        throw new Error(uploadResp.message || 'File upload failed');
+                    }
+                } else {
+                    // No new file chosen — update only key/type if changed
+                    const payload = {
+                        setting_key: settingData.setting_key,
+                        setting_value: settingData.setting_value,
+                        setting_type: 'file',
+                    };
+                    const response = await settingService.updateSetting(id, payload);
+                    if (response.success) {
+                        setSuccessMessage(`Setting "${settingData.setting_key}" updated successfully!`);
+                        fetchSettings();
+                        setTimeout(() => setSuccessMessage(''), 3000);
+                    } else {
+                        throw new Error(response.message || 'Failed to update setting');
+                    }
+                }
             } else {
-                throw new Error(response.message || 'Failed to update setting');
+                // Text setting
+                if (!settingData.setting_value || !String(settingData.setting_value).trim()) {
+                    setError('Setting value is required.');
+                    setSubmitting(false);
+                    return;
+                }
+                const payload = {
+                    setting_key: settingData.setting_key,
+                    setting_value: settingData.setting_value,
+                    setting_type: settingData.setting_type || 'text',
+                };
+                const response = await settingService.updateSetting(id, payload);
+                if (response.success) {
+                    setSuccessMessage(`Setting "${settingData.setting_key}" updated successfully!`);
+                    fetchSettings();
+                    setTimeout(() => setSuccessMessage(''), 3000);
+                } else {
+                    throw new Error(response.message || 'Failed to update setting');
+                }
             }
         } catch (err) {
             setError(err.message || 'An error occurred during update.');
@@ -121,8 +185,8 @@ const AdminSettingDetail = () => {
 
     const handleAddSetting = async (e) => {
         e.preventDefault();
-        if (!newSetting.key.trim() || !newSetting.value.trim()) {
-            setError('Both key and value are required for new setting.');
+        if (!newSetting.key.trim()) {
+            setError('Setting key is required.');
             return;
         }
 
@@ -130,13 +194,39 @@ const AdminSettingDetail = () => {
         setError('');
 
         try {
-            const response = await settingService.createSetting({
+            // If new setting is a file type, upload file first
+            let payload = {
                 setting_key: newSetting.key,
-                setting_value: newSetting.value,
-            });
+                setting_type: newSetting.type || 'text',
+            };
+
+            if (newSetting.type === 'file') {
+                if (!newSettingFile) {
+                    setError('Please choose a file to upload for this setting.');
+                    setSubmitting(false);
+                    return;
+                }
+                const uploadResp = await fileService.uploadFile(newSettingFile, { context: 'setting', key: newSetting.key });
+                if (uploadResp.success) {
+                    const filePath = uploadResp.data?.file_path || uploadResp.data?.path || uploadResp.data;
+                    payload.setting_value = filePath;
+                } else {
+                    throw new Error(uploadResp.message || 'File upload failed');
+                }
+            } else {
+                if (!newSetting.value.trim()) {
+                    setError('Setting value is required.');
+                    setSubmitting(false);
+                    return;
+                }
+                payload.setting_value = newSetting.value;
+            }
+
+            const response = await settingService.createSetting(payload);
             if (response.success) {
                 setSuccessMessage('New setting created successfully!');
-                setNewSetting({ key: '', value: '' });
+                setNewSetting({ key: '', value: '', type: 'text' });
+                setNewSettingFile(null);
                 setShowAddForm(false);
                 fetchSettings();
                 setTimeout(() => setSuccessMessage(''), 3000);
@@ -232,17 +322,40 @@ const AdminSettingDetail = () => {
                                         </div>
                                         <div className="col-md-7">
                                             <div className="mb-3">
-                                                <label className="form-label">Setting Value</label>
-                                                <input
-                                                    type="text"
-                                                    className="form-control"
-                                                    placeholder="Enter value"
-                                                    value={newSetting.value}
-                                                    onChange={(e) =>
-                                                        setNewSetting({ ...newSetting, value: e.target.value })
-                                                    }
+                                                <label className="form-label">Setting Type</label>
+                                                <select
+                                                    className="form-select"
+                                                    value={newSetting.type}
+                                                    onChange={(e) => setNewSetting({ ...newSetting, type: e.target.value })}
                                                     disabled={submitting}
-                                                />
+                                                >
+                                                    <option value="text">Text</option>
+                                                    <option value="file">File</option>
+                                                </select>
+                                            </div>
+                                            <div className="mb-3">
+                                                <label className="form-label">Setting Value</label>
+                                                {newSetting.type === 'file' ? (
+                                                    <ImageUploadInput
+                                                        label="Upload File"
+                                                        name="setting_file"
+                                                        onChange={(e) => setNewSettingFile(e.target.files?.[0] || null)}
+                                                        currentImageUrl={null}
+                                                        required={false}
+                                                        smallText="Upload a file for this setting."
+                                                    />
+                                                ) : (
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Enter value"
+                                                        value={newSetting.value}
+                                                        onChange={(e) =>
+                                                            setNewSetting({ ...newSetting, value: e.target.value })
+                                                        }
+                                                        disabled={submitting}
+                                                    />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
@@ -257,7 +370,8 @@ const AdminSettingDetail = () => {
                                             className="btn btn-link"
                                             onClick={() => {
                                                 setShowAddForm(false);
-                                                setNewSetting({ key: '', value: '' });
+                                                setNewSetting({ key: '', value: '', type: 'text' });
+                                                setNewSettingFile(null);
                                             }}
                                         >
                                             Cancel
@@ -293,35 +407,46 @@ const AdminSettingDetail = () => {
                             ) : (
                                 <div className="list-group list-group-flush">
                                     {settings.map((setting) => (
-                                        <div key={setting.id} className="list-group-item">
+                                        <div key={setting.setting_key} className="list-group-item">
                                             <div className="row align-items-center">
                                                 <div className="col-md-4">
                                                     <div className="mb-2 mb-md-0">
                                                         <strong>{setting.setting_key}</strong>
                                                         <div className="text-muted small">
-                                                            ID: {setting.id}
+                                                            {setting.id ? `ID: ${setting.id}` : `Key: ${setting.setting_key}`}
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="col-md-6">
-                                                    <input
-                                                        type="text"
-                                                        className="form-control"
-                                                        value={editingSettings[setting.id]?.setting_value || ''}
-                                                        onChange={(e) =>
-                                                            handleSettingChange(
-                                                                setting.id,
-                                                                'setting_value',
-                                                                e.target.value
-                                                            )
-                                                        }
-                                                        disabled={submitting}
-                                                    />
+                                                    {editingSettings[setting.setting_key]?.setting_type === 'file' ? (
+                                                        <ImageUploadInput
+                                                            label="Upload File"
+                                                            name={`setting_file_${setting.setting_key}`}
+                                                            onChange={(e) => handleExistingFileChange(setting.setting_key, e.target.files?.[0] || null)}
+                                                            currentImageUrl={setting.setting_value ? `${import.meta.env.VITE_API_URL}/${setting.setting_value}` : null}
+                                                            required={false}
+                                                            smallText="Upload a new file to replace the current value."
+                                                        />
+                                                    ) : (
+                                                        <input
+                                                            type="text"
+                                                            className="form-control"
+                                                            value={editingSettings[setting.setting_key]?.setting_value || ''}
+                                                            onChange={(e) =>
+                                                                handleSettingChange(
+                                                                    setting.setting_key,
+                                                                    'setting_value',
+                                                                    e.target.value
+                                                                )
+                                                            }
+                                                            disabled={submitting}
+                                                        />
+                                                    )}
                                                 </div>
                                                 <div className="col-md-2">
                                                     <div className="btn-list justify-content-end">
                                                         <button
-                                                            onClick={() => handleUpdateSetting(setting.id)}
+                                                            onClick={() => handleUpdateSetting(setting.setting_key)}
                                                             className="btn btn-sm btn-success"
                                                             disabled={submitting}
                                                             title="Save"
@@ -330,7 +455,7 @@ const AdminSettingDetail = () => {
                                                         </button>
                                                         <button
                                                             onClick={() =>
-                                                                handleDeleteSetting(setting.id, setting.setting_key)
+                                                                handleDeleteSetting(setting.setting_key, setting.setting_key)
                                                             }
                                                             className="btn btn-sm btn-danger"
                                                             disabled={submitting}
