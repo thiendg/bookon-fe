@@ -82,8 +82,7 @@ function App() {
           <div className="App">
             <Routes>
               {/* Root / Public routes */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/home" element={<StoreBookList />} />
+              <Route path="/" element={<StoreBookList />} />
               <Route path="/books" element={<StoreBookList />} />
               <Route path="/books/:id" element={<StoreBookDetail />} />
               <Route path="/cart" element={<StoreCartPage />} />

@@ -101,11 +101,7 @@ const BookDetail = () => {
               <div className="w-40 sm:w-48 md:w-56 bg-slate-50 rounded-3xl overflow-hidden shadow-inner">
                 <div className="w-full h-60 sm:h-72 md:h-80 overflow-hidden">
                   <img
-                    src={
-                      book.cover_image_url
-                        ? `/uploads/${book.cover_image_url}`
-                        : "/default_book_cover.png"
-                    }
+                    src={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null                    }
                     alt={book.title}
                     className="w-full h-full object-cover"
                   />
