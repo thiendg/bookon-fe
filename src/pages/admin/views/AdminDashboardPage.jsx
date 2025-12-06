@@ -52,7 +52,6 @@ const AdminDashboardPage = () => {
                 totalOrders: ordersResponse?.data.total || ordersResponse.data?.length || 0,
                 totalRevenue: statsResponse.data?.totalRevenue || 0
             };
-            console.log(calculatedStats);
             setStats(calculatedStats);
             setRecentOrders(ordersResponse.data?.posts.slice(0, 5) || []);
             // Fetch top books
@@ -61,6 +60,7 @@ const AdminDashboardPage = () => {
             const tb = topBooksResponse?.data;
             const normalizedTopBooks = Array.isArray(tb) ? tb : (tb?.data || []);
             setTopBooks(normalizedTopBooks);
+            console.log('Top Books:', normalizedTopBooks);
 
         } catch (err) {
             setError(err.message || 'Failed to load dashboard data');
@@ -316,10 +316,10 @@ const AdminDashboardPage = () => {
                                                         </div>
                                                         <div className="col-auto">
                                                             <div className="text-muted small">
-                                                                {book.total_sales || 0} sold
+                                                                {book.sold_count || 0} sold
                                                             </div>
                                                             <div className="text-success">
-                                                                {formatCurrency(book.revenue || 0)}
+                                                                {formatCurrency(book.sold_count * book.price || 0)}
                                                             </div>
                                                         </div>
                                                     </div>

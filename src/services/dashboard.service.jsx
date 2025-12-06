@@ -54,7 +54,6 @@ export const dashboardService = {
             // Calculate revenue from transactions array (normalize shapes)
             let totalRevenue = 0;
             const txData = _unwrap(transactionsResp).data.posts;
-            console.log('Transactions Data:', txData);
             if (Array.isArray(txData)) {
                 totalRevenue = txData.reduce((sum, t) => sum + (parseFloat(t.amount) || 0), 0);
             } else if (Array.isArray(txData.data)) {
@@ -96,7 +95,7 @@ export const dashboardService = {
      */
     getTopBooks: async (limit = 5) => {
         try {
-            const resp = await bookService.getBooks({ limit }).catch(() => ({ data: [] }));
+            const resp = await bookService.getBooks({ pageSize: limit, withSales: 1 }).catch(() => ({ data: [] }));
             const d = _unwrap(resp);
             return { data: Array.isArray(d) ? d : d.data || [] };
         } catch (err) {

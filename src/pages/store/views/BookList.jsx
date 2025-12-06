@@ -116,11 +116,7 @@ const BookList = () => {
               <div className="w-full bg-gradient-to-b from-slate-100 to-slate-50">
                 <div className="w-full h-44 sm:h-48 md:h-52 overflow-hidden">
                   <img
-                    src={
-                      book.cover_image_url
-                        ? `/uploads/${book.cover_image_url}`
-                        : "/default_book_cover.png"
-                    }
+                    src={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null}
                     alt={book.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
