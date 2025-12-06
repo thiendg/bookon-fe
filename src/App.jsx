@@ -81,24 +81,27 @@ function App() {
         <CartProvider>
           <div className="App">
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-
-              {/*các route cho phần #3 */}
+              {/* Root / Public routes */}
+              <Route path="/" element={<HomePage />} />
               <Route path="/home" element={<StoreBookList />} />
               <Route path="/books" element={<StoreBookList />} />
               <Route path="/books/:id" element={<StoreBookDetail />} />
               <Route path="/cart" element={<StoreCartPage />} />
+              <Route path="/posts" element={<PostListPage />} />
+              <Route path="/posts/:id" element={<PostDetailPage />} />
+              <Route path="/categories" element={<CategoryList />} />
+              <Route path="/categories/:categoryId" element={<CategoryBooks />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/faqs" element={<FaqPage />} />
 
-              {/* Auth routes cũ */}
+              {/* Auth routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
-              {/* Protected Routes */}
+              {/* Protected / User routes */}
               <Route
                 path="/dashboard"
                 element={
@@ -108,116 +111,78 @@ function App() {
                 }
               />
 
-              {/*  admin quản lý sản phẩm */}
               <Route
-                path="/admin/books"
+                path="/profile"
                 element={
                   <ProtectedRoute>
-                    <AdminBooks />
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
-              />
+              >
+                <Route path="orders" element={<OrderList />} />
+                <Route path="orders/:orderId" element={<OrderDetailsPage />} />
+                <Route path="reviews" element={<ReviewsPage />} />
+              </Route>
 
-              {/*  admin quản lý đơn hàng */}
+              {/* Admin routes (nested under /admin) */}
               <Route
-                path="/admin/orders"
+                path="/admin"
                 element={
-                  <ProtectedRoute>
-                    <AdminOrders />
-                  </ProtectedRoute>
+                  <AdminRoute>
+                    <AdminLayout />
+                  </AdminRoute>
                 }
-              />
+              >
+                <Route index element={<AdminDashboardPage />} />
+                <Route path="users" element={<UserList />} />
+                <Route path="users/create" element={<UserCreate />} />
+                <Route path="users/:id" element={<UserDetail />} />
 
-              {/* 404 */}
+                <Route path="books" element={<BookList />} />
+                <Route path="books/create" element={<BookCreate />} />
+                <Route path="books/:id" element={<BookDetail />} />
+
+                <Route path="roles" element={<RoleList />} />
+                <Route path="roles/create" element={<RoleCreate />} />
+                <Route path="roles/:id" element={<RoleDetail />} />
+
+                <Route path="categories" element={<AdminCategoryList />} />
+                <Route path="categories/create" element={<AdminCategoryCreate />} />
+                <Route path="categories/:id" element={<AdminCategoryDetail />} />
+
+                <Route path="orders" element={<AdminOrderList />} />
+                <Route path="orders/:id" element={<AdminOrderDetail />} />
+
+                <Route path="reviews" element={<AdminReviewList />} />
+                <Route path="reviews/:id" element={<AdminReviewDetail />} />
+
+                <Route path="posts" element={<AdminPostList />} />
+                <Route path="posts/create" element={<AdminPostCreate />} />
+                <Route path="posts/:id" element={<AdminPostDetail />} />
+
+                <Route path="post-comments" element={<AdminPostCommentList />} />
+                <Route path="post-comments/:id" element={<AdminPostCommentDetail />} />
+
+                <Route path="settings" element={<AdminSettingDetail />} />
+                <Route path="contacts" element={<AdminContactList />} />
+                <Route path="contacts/:id" element={<AdminContactDetail />} />
+                <Route path="faqs" element={<AdminFaqList />} />
+                <Route path="faqs/create" element={<AdminFaqCreate />} />
+                <Route path="faqs/:id" element={<AdminFaqDetail />} />
+
+                <Route path="files" element={<FilesList />} />
+                <Route path="order-items" element={<OrderItemsList />} />
+                <Route path="order-reviews" element={<OrderReviewsList />} />
+                <Route path="sessions" element={<SessionsList />} />
+                <Route path="transactions" element={<TransactionsList />} />
+                <Route path="user-tokens" element={<UserTokensList />} />
+              </Route>
+
+              {/* Fallback 404 */}
               <Route path="*" element={<div>404 - Page Not Found</div>} />
             </Routes>
           </div>
         </CartProvider>
-        <div className="App">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={<HomePage />} />
-
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} /> {/* Render Register component */}
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            {/* <Route path="/books/:id" element={<BookDetailsPage />} /> */}
-            <Route path="/categories" element={<CategoryList />} />
-            <Route path="/categories/:categoryId" element={<CategoryBooks />} />
-            {/* <Route path="/cart" element={<CartPage />} /> */}
-            <Route path="/posts" element={<PostListPage />} /> {/* New route for Public Post List Page */}
-            <Route path="/posts/:id" element={<PostDetailPage />} /> {/* New route for Public Post Detail Page */}
-
-            {/* Protected Routes */}
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <ProfilePage />
-                </ProtectedRoute>
-              }
-            >
-              <Route path="orders" element={<OrderList />} />
-              <Route path="orders/:orderId" element={<OrderDetailsPage />} />
-              <Route path="reviews" element={<ReviewsPage />} /> {/* Nested route for Reviews Page */}
-            </Route>
-
-            {/* Admin Routes */}
-            <Route
-              path="/admin"
-              element={
-                <AdminRoute>
-                  <AdminLayout />
-                </AdminRoute>
-              }
-            >
-              <Route index element={<AdminDashboardPage />} />
-              <Route path="users" element={<UserList />} />
-              <Route path="users/create" element={<UserCreate />} />
-              <Route path="users/:id" element={<UserDetail />} />
-              <Route path="books" element={<BookList />} />
-              <Route path="books/create" element={<BookCreate />} />
-              <Route path="books/:id" element={<BookDetail />} />
-              <Route path="roles" element={<RoleList />} />
-              <Route path="roles/create" element={<RoleCreate />} /> {/* New route for Role Create */}
-              <Route path="roles/:id" element={<RoleDetail />} />
-              <Route path="categories" element={<AdminCategoryList />} /> {/* New route for Admin Category List */}
-              <Route path="categories/create" element={<AdminCategoryCreate />} /> {/* New route for Admin Category Create */}
-              <Route path="categories/:id" element={<AdminCategoryDetail />} />
-              <Route path="orders" element={<AdminOrderList />} /> {/* New route for Admin Order List */}
-              <Route path="orders/:id" element={<AdminOrderDetail />} />
-              <Route path="reviews" element={<AdminReviewList />} /> {/* New route for Admin Review List */}
-              <Route path="reviews/:id" element={<AdminReviewDetail />} />
-              <Route path="posts" element={<AdminPostList />} /> {/* New route for Admin Post List */}
-              <Route path="posts/create" element={<AdminPostCreate />} /> {/* New route for Admin Post Create */}
-              <Route path="posts/:id" element={<AdminPostDetail />} />
-              <Route path="post-comments" element={<AdminPostCommentList />} /> {/* New route for Admin Post Comment List */}
-              <Route path="post-comments/:id" element={<AdminPostCommentDetail />} /> {/* New route for Admin Post Comment Detail */}
-              <Route path="settings" element={<AdminSettingDetail />} />
-              <Route path="contacts" element={<AdminContactList />} /> {/* New route for Admin Contact List */}
-              <Route path="contacts/:id" element={<AdminContactDetail />} />
-              <Route path="faqs" element={<AdminFaqList />} /> {/* New route for Admin FAQ List */}
-              <Route path="faqs/create" element={<AdminFaqCreate />} /> {/* New route for Admin FAQ Create */}
-              <Route path="faqs/:id" element={<AdminFaqDetail />} /> {/* New route for Admin FAQ Detail */}
-              <Route path="files" element={<FilesList />} />
-              <Route path="order-items" element={<OrderItemsList />} />
-              <Route path="order-reviews" element={<OrderReviewsList />} />
-              <Route path="sessions" element={<SessionsList />} />
-              <Route path="transactions" element={<TransactionsList />} />
-              <Route path="user-tokens" element={<UserTokensList />} />
-              {/* Add other admin routes here */}
-            </Route>
-
-            {/* Public Contact Page */}
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/faqs" element={<FaqPage />} /> {/* New route for Public FAQ Page */}
-
-            {/* 404 - Should be the last route */}
-            <Route path="*" element={<div>404 - Page Not Found</div>} />
-          </Routes>
-        </div>
       </AuthProvider>
     </Router>
   );
