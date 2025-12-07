@@ -15,6 +15,7 @@ import Register from './pages/auth/views/Register';
 import ResetPassword from './pages/auth/views/ResetPassword';
 import VerifyEmail from './pages/auth/views/VerifyEmail';
 import Dashboard from "./pages/home/views/Dashboard";
+import AboutPage from './pages/home/views/AboutPage'; // Import AboutPage
 
 // Home/Public Views
 import CategoryList from './pages/home/views/CategoryList';
@@ -93,6 +94,7 @@ function App() {
                     <Route path="/categories/:categoryId" element={<CategoryBooks />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/faqs" element={<FaqPage />} />
+                    <Route path="/about" element={<AboutPage />} />
 
                     {/* Auth routes */}
                     <Route path="/login" element={<Login />} />

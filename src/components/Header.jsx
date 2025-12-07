@@ -17,7 +17,19 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
-    console.log(settingData)
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [dropdownRef]);
 
     const handleLogout = async () => {
         await logout();
@@ -32,30 +44,36 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => {
         }
     };
 
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setDropdownOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-    }, [dropdownRef]);
+    // If settings are still loading, render a minimal header or null
+    if (settingData.loading || settingData.error) {
+        // You might want to render a very basic header or a loading spinner here
+        // For now, let's render a basic structure or null if absolutely no data is available
+        return (
+            <header className="sticky z-50 top-0 bg-white/97 shadow-2xs" {...props}>
+                <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
+                    <div className="flex items-center">
+                        <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
+                            <img src="/bookon-logo.png" className="w-8 md:w-8 h-auto object-contain" alt="Loading" />
+                            <span className="hidden sm:inline">Loading...</span>
+                        </Link>
+                    </div>
+                </nav>
+            </header>
+        );
+    }
 
     return (
         <header className="sticky z-50 top-0 bg-white/97 shadow-2xs" {...props}>
-            {settingData.adBanner && (
+            {settingData.settings.adBanner && (
                 <div className="bg-[#52786F] h-max w-full text-white text-center font-semibold text-shadow-2xs py-2">
-                    {settingData.adBanner}
+                    {settingData.settings.adBanner}
                 </div>
             )}
             <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
                 <div className="flex items-center">
                     <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
-                        <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />
-                        <span className="hidden sm:inline">{settingData.siteName}</span>
+                        <img src={settingData.settings.company_logo_url ? `${import.meta.env.VITE_API_URL}/${settingData.settings.company_logo_url}` : '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />
+                        <span className="hidden sm:inline">{settingData.settings.company_name}</span>
                     </Link>
                 </div>
 
