@@ -1,7 +1,7 @@
 // src/pages/home/views/ReviewsPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { reviewService } from '@/services/review.service';
-import { bookService } from '@/services/book.service'; // To fetch book titles for reviews
+import { booksService } from '@/services/books.service'; // To fetch book titles for reviews
 import { useAuth } from '@/hooks/useAuth.hook';
 import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
@@ -49,7 +49,7 @@ const ReviewsPage = () => {
                 const reviewsWithBookTitles = await Promise.all(
                     (response.data.data || []).map(async (review) => { // Correctly extract reviews from response.data.data
                         try {
-                            const bookResponse = await bookService.getBookById(review.book_id);
+                            const bookResponse = await booksService.getBookById(review.book_id);
                             return { ...review, book_title: bookResponse.success ? bookResponse.data.title : 'Unknown Book' };
                         } catch (bookErr) {
                             console.error("Error fetching book for review:", bookErr);
@@ -73,7 +73,7 @@ const ReviewsPage = () => {
 
     const fetchBooksForDropdown = useCallback(async () => {
         try {
-            const response = await bookService.getBooks({ limit: 100 }); // Get a reasonable number of books
+            const response = await booksService.getBooks({ limit: 100 }); // Get a reasonable number of books
             if (response.success) {
                 setBooksList(response.data.data || []); // Correctly extract books from response.data.data
             }

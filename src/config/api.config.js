@@ -20,6 +20,7 @@ export const API_CONFIG = {
 
         // Category endpoints
         CATEGORIES: '/modules/categories/api/',
+        CATEGORY_SELECT_OPTIONS: '/modules/categories/api/?action=select', // Corrected endpoint
 
         // Order endpoints
         ORDERS: '/modules/orders/api/',

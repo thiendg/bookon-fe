@@ -1,7 +1,7 @@
 // src/pages/admin/views/BookCreate.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { bookService } from '@/services/book.service';
+import { booksService } from '@/services/books.service';
 import { categoryService } from '@/services/category.service'; // Import categoryService
 import { Helmet } from 'react-helmet-async';
 import {
@@ -96,7 +96,7 @@ const BookCreate = () => {
 
         try {
             const bookData = { ...formData, images: [coverImageFile] };
-            const response = await bookService.createBook(bookData);
+            const response = await booksService.createBook(bookData);
             if (response.success) {
                 setSuccessMessage('Book created successfully!');
                 setFormData({ // Clear form

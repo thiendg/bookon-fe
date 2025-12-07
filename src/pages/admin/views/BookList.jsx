@@ -1,6 +1,6 @@
 // src/pages/admin/views/BookList.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import { bookService } from '@/services/book.service';
+import { booksService } from '@/services/books.service';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import {
@@ -46,7 +46,7 @@ const BookList = () => {
                 pageSize: pageSize,
                 ...(debouncedSearchTerm && { search: debouncedSearchTerm })
             };
-            const response = await bookService.getBooks(params);
+            const response = await booksService.getBooks(params);
             if (response.success) {
                 setBooks(response.data.data || []); // Correctly extract books
                 setTotalPages(response.data.pagination.totalPages || 1);
@@ -84,7 +84,7 @@ const BookList = () => {
         }
         try {
             setLoading(true);
-            const response = await bookService.deleteBook(bookId);
+            const response = await booksService.deleteBook(bookId);
             if (response.success) {
                 fetchBooks(); // Refresh the list
             } else {

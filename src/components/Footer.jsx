@@ -23,27 +23,9 @@ const BaseFooter = ({ settingData, categories, recommendations, ...props }) => {
 
                     {/* Links */}
                     <div className="w-full md:w-2/3 lg:w-3/4 flex flex-wrap justify-between">
-                        {/* Category */}
-                        <div className="w-1/2 sm:w-1/3 lg:w-1/4 mb-6 md:mb-0">
-                            <div className="font-bold mb-2">Category</div>
-                            <div className="space-y-1 flex flex-col">
-                                {categories.slice(0, 4).map((category, index) => (
-                                    <Link key={index} to={`/category/${category.slug}`} className="hover:underline hover:text-teal-700">{category.name}</Link>
-                                ))}
-                                <Link to="/categories" className="hover:underline hover:text-teal-700">More...</Link>
-                            </div>
-                        </div>
 
-                        {/* Recommendations */}
-                        <div className="w-1/2 sm:w-1/3 lg:w-1/4 mb-6 md:mb-0">
-                            <div className="font-bold mb-2">Recommendations</div>
-                            <div className="space-y-1 flex flex-col">
-                                {recommendations.slice(0, 4).map((recommendation, index) => (
-                                    <Link key={index} to={`/recommendations/${recommendation.slug}`} className="truncate hover:underline hover:text-teal-700">{recommendation.title}</Link>
-                                ))}
-                                <Link to="/recommendations" className="hover:underline hover:text-teal-700">More...</Link>
-                            </div>
-                        </div>
+
+
 
                         {/* Support */}
                         <div className="w-1/2 sm:w-1/3 lg:w-1/4">

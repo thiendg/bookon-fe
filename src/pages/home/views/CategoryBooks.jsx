@@ -1,7 +1,7 @@
 // src/pages/home/views/CategoryBooks.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { bookService } from '@/services/book.service';
+import { booksService } from '@/services/books.service';
 import { categoryService } from '@/services/category.service';
 import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
@@ -72,7 +72,7 @@ const CategoryBooks = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await bookService.getBooks({
+            const response = await booksService.getBooks({
                 page: currentPage,
                 pageSize: pageSize,
                 category_id: categoryId

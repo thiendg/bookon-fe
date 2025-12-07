@@ -5,10 +5,7 @@ import { useSettings } from '@/context/SettingsContext'; // Import useSettings
 export default function BasePage({ title, children, currentPage = "home", ...props }) {
     const settingsData = useSettings(); // Consume settings from context
 
-    // Categories and recommendations should be passed as props to BaseFooter
-    // or fetched by BaseFooter itself, as BasePage no longer manages them.
-    const categories = [ /* ... populate from props or fetch elsewhere ... */ ];
-    const recommendations = [ /* ... populate from props or fetch elsewhere ... */ ];
+
 
 
     return (
@@ -24,8 +21,6 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
             
             <BaseFooter
                 settingData={settingsData}
-                categories={categories}
-                recommendations={recommendations}
             />
         </div>
     );

@@ -1,7 +1,7 @@
 // src/pages/admin/views/BookDetail.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // Keep useNavigate for redirection
-import { bookService } from '@/services/book.service';
+import { booksService } from '@/services/books.service';
 import { categoryService } from '@/services/category.service'; // Import categoryService
 import { Helmet } from 'react-helmet-async'; // Keep Helmet for page title
 import {
@@ -38,7 +38,7 @@ const BookDetail = () => {
         setLoading(true);
         setError('');
         try {
-            const response = await bookService.getBookById(id);
+            const response = await booksService.getBookById(id);
             if (response.success) {
                 setBook(response.data);
             } else {
@@ -119,13 +119,13 @@ const BookDetail = () => {
             if (coverImageFile) {
                 updateData.images = [coverImageFile]; // Backend expects an array of images
             }
-            
-            const response = await bookService.updateBook(id, updateData);
+
+            const response = await booksService.updateBook(id, updateData);
             if (response.success) {
                 setSuccessMessage('Book updated successfully!');
                 setCoverImageFile(null); // Clear file input
                 // Optionally refetch book data to ensure UI is up-to-date, especially for new image URL
-                fetchBook(); 
+                fetchBook();
             } else {
                 throw new Error(response.message || 'Failed to update book');
             }

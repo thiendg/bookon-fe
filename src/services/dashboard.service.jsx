@@ -4,7 +4,7 @@
 // so we compute light-weight aggregates client-side by calling list endpoints
 // that already return pagination metadata.
 import { usersService } from './users.service';
-import { bookService } from './book.service';
+import { booksService } from './books.service';
 import { orderService } from './order.service';
 import { transactionService } from './transaction.service';
 
@@ -41,7 +41,7 @@ export const dashboardService = {
         try {
             const [usersResp, booksResp, ordersResp, transactionsResp] = await Promise.all([
                 usersService.getUsers({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
-                bookService.getBooks({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
+                booksService.getBooks({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
                 orderService.getOrders({ limit: 10 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
                 transactionService.getTransactions({ limit: 100 }).catch(() => ({ data: [] })),
             ]);
@@ -95,7 +95,7 @@ export const dashboardService = {
      */
     getTopBooks: async (limit = 5) => {
         try {
-            const resp = await bookService.getBooks({ pageSize: limit, withSales: 1 }).catch(() => ({ data: [] }));
+            const resp = await booksService.getBooks({ pageSize: limit, withSales: 1 }).catch(() => ({ data: [] }));
             const d = _unwrap(resp);
             return { data: Array.isArray(d) ? d : d.data || [] };
         } catch (err) {

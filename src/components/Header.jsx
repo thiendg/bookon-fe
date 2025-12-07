@@ -60,9 +60,7 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
 
                 <div className="hidden lg:flex lg:gap-x-12 lg:justify-center lg:items-center lg:font-semibold lg:text-shadow-2xs">
                     <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
-                    <Link className={pageClass(currentPage, "category")} to="/categories">Category</Link>
                     <Link className={pageClass(currentPage, "posts")} to="/posts">Posts</Link>
-                    <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
                     <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
                     <Link className={pageClass(currentPage, "faq")} to="/faqs">FAQ</Link>
                 </div>
@@ -132,9 +130,9 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
                 <div className="lg:hidden">
                     <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                         <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
-                        <Link className={pageClass(currentPage, "category")} to="/categories">Category</Link>
+
                         <Link className={pageClass(currentPage, "posts")} to="/posts">Posts</Link>
-                        <Link className={pageClass(currentPage, "recommendations")} to="/recommendations">Recommendations</Link>
+
                         <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
                         <Link className={pageClass(currentPage, "faq")} to="/faqs">FAQ</Link>
                     </div>

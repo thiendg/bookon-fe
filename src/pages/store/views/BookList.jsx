@@ -1,182 +1,286 @@
-// src/pages/store/views/BookList.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import BasePage from "@/components/BasePage";
 import { booksService } from "@/services/books.service";
+import { categoryService } from '@/services/category.service';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { API_CONFIG } from '@/config/api.config';
 
-const PAGE_SIZE = 12;
+const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [value, delay]);
+    return debouncedValue;
+};
 
-const BookList = () => {
-  const [books, setBooks] = useState([]);
-  const [pagination, setPagination] = useState(null);
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  const loadBooks = async (page = 1, searchText = "") => {
-    try {
-      setLoading(true);
-      setError("");
+const BookCard = ({ book }) => {
+    const getCoverImageUrl = (cover) => {
+        const base = (API_CONFIG.BASE_URL || import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+        if (!cover) return 'https://source.unsplash.com/random/300x400/?book';
+        if (cover.startsWith('http')) return cover;
+        if (cover.startsWith('/')) return `${base}${cover}`;
+        return `${base}/${cover}`;
+    };
 
-      const res = await booksService.list({
-        page,
-        pageSize: PAGE_SIZE,
-        search: searchText,
-      });
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(amount) || 0);
+    };
 
-      if (!res.success) {
-        console.error("Load books failed:", res);
-        setError(res.message || "Failed to load book list.");
-        setBooks([]);
-        setPagination(null);
-        return;
-      }
+    const imageUrl = getCoverImageUrl(book.cover_image_url || book.cover_image || '');
 
-      const payload = res.data || {};
-      setBooks(payload.data || []);
-      setPagination(payload.pagination || null);
-    } catch (err) {
-      console.error("Load books error:", err);
-      setError(
-        err?.message ||
-          err?.error ||
-          "An error occurred while loading the book list. Please try again."
-      );
-      setBooks([]);
-      setPagination(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadBooks(1, "");
-  }, []);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    loadBooks(1, search.trim());
-  };
-
-  const handlePageChange = (page) => {
-    if (!pagination) return;
-    if (page < 1 || page > pagination.totalPages) return;
-    loadBooks(page, search.trim());
-  };
-
-  return (
-    <BasePage title="Book List" currentPage="home">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Title */}
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">Book List</h1>
-          <p className="text-gray-600 text-sm md:text-base">
-            Search and choose the books that best fit your needs.
-          </p>
-        </div>
-
-        {/* Search box */}
-        <form
-          onSubmit={handleSearchSubmit}
-          className="bg-white rounded-3xl shadow-sm px-4 py-3 mb-8 flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center"
+    return (
+        <a
+            key={book.id}
+            href={`/books/${book.id}`}
+            className="group w-[140px] sm:w-[160px] md:w-[180px] lg:w-[190px] bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col"
         >
-          <input
-            type="text"
-            placeholder="Search products by keywords..."
-            className="flex-1 border border-gray-200 rounded-2xl px-3 py-2 text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-[#05EAC0]/60 focus:border-[#05EAC0]"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <button
-            type="submit"
-            className="whitespace-nowrap px-4 py-2 bg-[#05EAC0] text-white rounded-2xl text-sm md:text-base font-medium hover:bg-[#04c7a4] transition-colors"
-          >
-            Search
-          </button>
-        </form>
-
-        {/* Status */}
-        {loading && (
-          <div className="mb-4 text-gray-600 text-sm text-center">
-            Loading data…
-          </div>
-        )}
-        {error && !loading && (
-          <div className="mb-4 text-red-600 text-sm text-center">{error}</div>
-        )}
-
-        {/* Book list */}
-        <div className="flex flex-wrap justify-center gap-4 md:gap-6">
-          {books.map((book) => (
-            <a
-              key={book.id}
-              href={`/books/${book.id}`}
-              className="group w-[140px] sm:w-[160px] md:w-[180px] lg:w-[190px] bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-200 overflow-hidden flex flex-col"
-            >
-              {/* Cover */}
-              <div className="w-full bg-gradient-to-b from-slate-100 to-slate-50">
+            <div className="w-full bg-gradient-to-b from-slate-100 to-slate-50">
                 <div className="w-full h-44 sm:h-48 md:h-52 overflow-hidden">
-                  <img
-                    src={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null}
-                    alt={book.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                  />
+                    <img
+                        src={imageUrl}
+                        alt={book.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                    />
                 </div>
-              </div>
+            </div>
 
-              {/* Card content */}
-              <div className="flex-1 flex flex-col px-3 pt-3 pb-4">
+            <div className="flex-1 flex flex-col px-3 pt-3 pb-4">
                 <div className="text-[13px] font-semibold mb-1 leading-snug line-clamp-2">
-                  {book.title}
+                    {book.title}
                 </div>
                 <div className="text-xs text-gray-500 mb-1">
-                  {book.category_name || "Unknown category"}
+                    {book.author || "Unknown Author"}
                 </div>
                 <div className="mt-auto text-sm font-bold text-[#0b7560]">
-                  {Number(book.price).toLocaleString("vi-VN")} ₫
+                    {formatCurrency(book.price)}
                 </div>
-              </div>
-            </a>
-          ))}
-        </div>
+            </div>
+        </a>
+    );
+};
 
-        {/* No data */}
-        {!loading && !error && books.length === 0 && (
-          <div className="mt-6 text-gray-600 text-sm text-center">
-            No products matched your search keyword.
-          </div>
-        )}
 
-        {/* Pagination */}
-        {pagination && pagination.totalPages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-8">
-            <button
-              type="button"
-              className="px-3 py-1 border rounded-lg text-sm disabled:opacity-50"
-              disabled={!pagination.hasPrevPage}
-              onClick={() =>
-                handlePageChange(pagination.currentPage - 1)
-              }
-            >
-              &laquo;
-            </button>
-            <span className="text-sm">
-              Page {pagination.currentPage} / {pagination.totalPages}
-            </span>
-            <button
-              type="button"
-              className="px-3 py-1 border rounded-lg text-sm disabled:opacity-50"
-              disabled={!pagination.hasNextPage}
-              onClick={() =>
-                handlePageChange(pagination.currentPage + 1)
-              }
-            >
-              &raquo;
-            </button>
-          </div>
-        )}
-      </div>
-    </BasePage>
-  );
+const BookList = () => {
+    const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(2);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+    const debouncedMinPrice = useDebounce(minPrice, 500);
+    const debouncedMaxPrice = useDebounce(maxPrice, 500);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await categoryService.getAllCategories();
+                if (response && response.success && Array.isArray(response.data?.data)) {
+                    setCategories(response.data.data);
+                } else {
+                    console.error('Failed to fetch categories:', response);
+                }
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []);
+
+    const loadBooks = useCallback(async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const params = {
+                page: currentPage,
+                pageSize: pageSize,
+                ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+                ...(selectedCategory && { category_id: selectedCategory }),
+                ...(debouncedMinPrice && { min_price: debouncedMinPrice }),
+                ...(debouncedMaxPrice && { max_price: debouncedMaxPrice }),
+            };
+
+            const response = await booksService.getBooks(params);
+            const data = response.data || {};
+
+            console.debug('[BookList] booksService.getBooks response:', response);
+
+            let list = [];
+            let paginationInfo = {};
+
+            if (data && data.pagination) {
+                list = data.data || [];
+                paginationInfo = data.pagination;
+            } else if (Array.isArray(data)) {
+                list = data;
+                paginationInfo = { totalItems: data.length, totalPages: 1, currentPage: 1, pageSize: data.length, hasNextPage: false, hasPrevPage: false };
+            } else if (Array.isArray(data.data)) {
+                list = data.data;
+                paginationInfo = { totalItems: data.data.length, totalPages: 1, currentPage: 1, pageSize: data.data.length, hasNextPage: false, hasPrevPage: false };
+            }
+
+            setBooks(list);
+            setTotalItems(paginationInfo.totalItems || 0);
+            setTotalPages(paginationInfo.totalPages || 1);
+            setCurrentPage(paginationInfo.currentPage || 1);
+
+        } catch (err) {
+            console.error('[BookList] loadBooks error:', err);
+            setError(err.message || 'An error occurred while fetching books.');
+            setBooks([]);
+            setTotalItems(0);
+            setTotalPages(1);
+            setCurrentPage(1);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentPage, pageSize, debouncedSearchTerm, selectedCategory, debouncedMinPrice, debouncedMaxPrice]);
+
+    useEffect(() => {
+        loadBooks();
+    }, [loadBooks]);
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    return (
+        <BasePage title="Book List" currentPage="home">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+                <div className="mb-6 text-center">
+                    <h1 className="text-2xl md:text-3xl font-bold mb-2">Book List</h1>
+                    <p className="text-gray-600 text-sm md:text-base">
+                        Search and choose the books that best fit your needs.
+                    </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:flex-wrap lg:flex-nowrap gap-4 mb-8">
+                    <div className="relative flex-grow sm:w-1/2 lg:w-1/2">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search by title, author, or genre..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => {
+                            setSelectedCategory(e.target.value);
+                            setCurrentPage(1);
+                        }}
+                        className="block w-full sm:w-1/2 lg:w-1/4 pr-8 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                        <option value="">All Categories</option>
+                        {categories.map((cat) => (
+                            <option key={cat.value} value={cat.value}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <div className="flex gap-2 w-full sm:w-full lg:w-1/4">
+                        <input
+                            type="number"
+                            placeholder="Min Price"
+                            value={minPrice}
+                            onChange={(e) => {
+                                const value = parseFloat(e.target.value);
+                                setMinPrice(value < 0 ? 0 : e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            step="1000"
+                            className="block w-1/2 pr-3 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                        <input
+                            type="number"
+                            placeholder="Max Price"
+                            value={maxPrice}
+                            onChange={(e) => {
+                                const value = parseFloat(e.target.value);
+                                setMaxPrice(value < 0 ? 0 : e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            step="1000"
+                            className="block w-1/2 pr-3 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+                </div>
+
+                {loading && (
+                    <div className="mb-4 text-gray-600 text-sm text-center">
+                        Loading data…
+                    </div>
+                )}
+                {error && !loading && (
+                    <div className="mb-4 text-red-600 text-sm text-center">{error}</div>
+                )}
+
+                <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+                    {books.map((book) => (
+                        <BookCard key={book.id} book={book} />
+                    ))}
+                </div>
+
+                {!loading && !error && books.length === 0 && (
+                    <div className="mt-6 text-gray-600 text-sm text-center">
+                        No products matched your search keyword.
+                    </div>
+                )}
+
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-8 space-x-2">
+                        <button
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Previous
+                        </button>
+                        {[...Array(totalPages)].map((_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => handlePageChange(index + 1)}
+                                className={`px-4 py-2 border rounded-md ${currentPage === index + 1 ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
+            </div>
+        </BasePage>
+    );
 };
 
 export default BookList;

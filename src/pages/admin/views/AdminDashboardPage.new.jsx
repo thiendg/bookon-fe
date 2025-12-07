@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { dashboardService } from '@/services/dashboard.service';
 import { usersService } from '@/services/users.service';
-import { bookService } from '@/services/book.service';
+import { booksService } from '@/services/books.service';
 import { orderService } from '@/services/order.service';
 import {
     IconUsers,
@@ -43,7 +43,7 @@ const AdminDashboardPage = () => {
             // Fetch all data in parallel
             const [usersResponse, booksResponse, ordersResponse, statsResponse] = await Promise.all([
                 usersService.getUsers({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
-                bookService.getBooks({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
+                booksService.getBooks({ limit: 1 }).catch(() => ({ data: [], pagination: { totalItems: 0 } })),
                 orderService.getOrders({ limit: 10, sortBy: 'created_at', sortOrder: 'DESC' }).catch(() => ({ data: [] })),
                 dashboardService.getStats().catch(() => ({ data: {} })),
             ]);
