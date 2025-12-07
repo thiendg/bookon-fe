@@ -29,7 +29,7 @@ const PostListPage = () => {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
-
+    console.log(posts)
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         setError('');
@@ -119,8 +119,8 @@ const PostListPage = () => {
                                 className="flex items-start gap-4 bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
                             >
                                 <div className="w-28 h-20 bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                                    {post.thumbnail ? (
-                                        <img src={post.thumbnail} alt={post.title} className="w-full h-full object-cover" />
+                                    {post.thumbnail_image_url ? (
+                                        <img src={`${import.meta.env.VITE_API_URL}/${post.thumbnail_image_url}`} alt={post.title} className="w-full h-full object-cover" />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
                                     )}

@@ -74,7 +74,7 @@ const PostCommentsList = ({ postId, onCommentAdded }) => {
                         <div className="flex items-start">
                             <div
                                 className="w-12 h-12 rounded-full bg-center bg-cover mr-3 flex-shrink-0"
-                                style={{ backgroundImage: `url(${author?.avatar_url || '/user-avatar.png'})` }}
+                                style={{ backgroundImage: `url(${author?.avatar_url ? `${import.meta.env.VITE_API_URL}/${author?.avatar_url}` : '/user-avatar.png'})` }}
                                 aria-hidden="true"
                             />
 
