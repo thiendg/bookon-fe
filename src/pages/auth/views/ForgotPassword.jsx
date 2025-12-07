@@ -19,13 +19,11 @@ const ForgotPassword = () => {
         setLoading(true);
 
         try {
-            // The backend should always return success for this endpoint for security reasons
             await forgotPassword(email);
             setMessage("If an account with that email exists, we've sent a link to reset your password.");
             setEmail('');
         } catch (err) {
             console.error("Forgot password error:", err);
-            // Even if the API fails, show a generic message to prevent user enumeration
             setMessage("If an account with that email exists, we've sent a link to reset your password.");
         } finally {
             setLoading(false);
@@ -33,11 +31,11 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
-            {/* Left-side: Image */}
-            <div className="hidden lg:block relative w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random/1200x900/?book,question')" }}>
-                <div className="absolute inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center p-12 text-white">
-                    <div>
+        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+            {/* Left-side: Image and Welcome Text */}
+            <div className="hidden lg:block w-full lg:w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random/1200x900/?book,question')" }}>
+                <div className="flex items-center justify-center h-full bg-gray-900 bg-opacity-60 p-12 text-white">
+                    <div className="max-w-md">
                         <h1 className="text-4xl font-bold leading-tight mb-4">Forgot Your Password?</h1>
                         <p className="text-lg text-gray-200">No worries. Enter your email and we'll guide you through the reset process.</p>
                     </div>
@@ -45,8 +43,8 @@ const ForgotPassword = () => {
             </div>
 
             {/* Right-side: Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
+                <div className="w-full max-w-sm">
                      <div className="text-center mb-8">
                         <Link to="/" className="inline-flex items-center text-3xl font-bold text-gray-900">
                             <BookOpenIcon className="h-8 w-8 mr-2 text-indigo-600" />
@@ -89,7 +87,7 @@ const ForgotPassword = () => {
                         <div>
                             <button
                                 type="submit"
-                                disabled={loading || message}
+                                disabled={loading || !!message}
                                 className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
                             >
                                 {loading ? (

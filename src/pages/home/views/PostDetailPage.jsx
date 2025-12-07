@@ -4,7 +4,7 @@ import { useParams, Link } from 'react-router-dom';
 import { postService } from '@/services/post.service';
 import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
-import { IconUser, IconArrowLeft } from '@tabler/icons-react'; // Added IconArrowLeft
+import { UserIcon, ArrowLeftIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 // Import comment components
 import PostCommentsList from './PostCommentsList';
@@ -15,7 +15,7 @@ const PostDetailPage = () => {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const [commentRefreshKey, setCommentRefreshKey] = useState(0); // Key to trigger comments refresh
+    const [commentRefreshKey, setCommentRefreshKey] = useState(0);
 
     const fetchPostDetails = useCallback(async () => {
         setLoading(true);
@@ -40,23 +40,26 @@ const PostDetailPage = () => {
     }, [fetchPostDetails]);
 
     const handleCommentAdded = () => {
-        setCommentRefreshKey(prev => prev + 1); // Increment key to trigger refresh
+        setCommentRefreshKey(prev => prev + 1);
     };
 
     if (loading) {
         return (
-            <BasePage title="Loading Post">
-                <div className="container mx-auto px-4 py-8 text-center">Loading post details...</div>
+            <BasePage title="Loading Post...">
+                <div className="container mx-auto px-4 py-8 text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading post details...</p>
+                </div>
             </BasePage>
         );
     }
 
     if (error && !post) {
         return (
-            <BasePage title="Post Error">
-                <div className="container mx-auto px-4 py-8 text-center text-red-600">
-                    <p className="mb-3">Error: {error}</p>
-                    <Link to="/posts" className="btn btn-primary">Back to Posts</Link>
+            <BasePage title="Error">
+                <div className="container mx-auto px-4 py-8 text-center text-red-600 bg-red-50 rounded-lg">
+                    <p className="mb-3 font-semibold">Error: {error}</p>
+                    <Link to="/posts" className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Back to Posts</Link>
                 </div>
             </BasePage>
         );
@@ -65,41 +68,46 @@ const PostDetailPage = () => {
     if (!post) {
         return (
             <BasePage title="Post Not Found">
-                <div className="container mx-auto px-4 py-8 text-center text-red-600">
-                    <p className="mb-3">Post not found.</p>
-                    <Link to="/posts" className="btn btn-primary">Back to Posts</Link>
+                <div className="container mx-auto px-4 py-8 text-center text-gray-600 bg-gray-50 rounded-lg">
+                    <p className="mb-3 font-semibold">Post not found.</p>
+                    <Link to="/posts" className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Back to Posts</Link>
                 </div>
             </BasePage>
         );
     }
 
     return (
-        <BasePage title={post.title}>
+        <BasePage title={post.title} currentPage="posts">
             <Helmet>
                 <meta name="description" content={post.content ? post.content.substring(0, 160) : ''} />
             </Helmet>
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <Link to="/posts" className="btn btn-ghost d-none d-sm-inline-block mb-4">
-                    <IconArrowLeft className="icon" />
-                    Back to Posts
-                </Link>
-                <div className="card">
-                    <div className="card-body">
-                        <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
-                        <p className="text-sm text-gray-600 mb-4">
-                            <IconUser className="icon icon-sm me-1" /> By User {post.user_id} on {new Date(post.created_at * 1000).toLocaleDateString()}
-                        </p>
-                        <div className="text-lg leading-relaxed text-gray-800" dangerouslySetInnerHTML={{ __html: post.content }}></div>
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+                <div className="max-w-4xl mx-auto">
+                    <Link to="/posts" className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 mb-6">
+                        <ArrowLeftIcon className="h-5 w-5" />
+                        Back to all posts
+                    </Link>
+                    <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-4">{post.title}</h1>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-600 mb-6">
+                            <div className="flex items-center gap-1.5">
+                                <UserIcon className="h-4 w-4" />
+                                <span>By {post.author_name || 'Admin'}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                                <CalendarDaysIcon className="h-4 w-4" />
+                                <span>{new Date(post.created_at * 1000).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                        {post.thumbnail && <img src={`${import.meta.env.VITE_API_URL}${post.thumbnail}`} alt={post.title} className="w-full h-auto rounded-lg mb-6"/>}
+                        <div className="prose lg:prose-xl max-w-none" dangerouslySetInnerHTML={{ __html: post.content }}></div>
                     </div>
-                </div>
 
-                {/* Post Comments Section */}
-                <div className="card mt-6">
-                    <div className="card-header">
-                        <h3 className="card-title">Comments</h3>
+                    <div className="bg-white mt-8 p-6 sm:p-8 rounded-lg shadow-md">
+                        <h3 className="text-2xl font-bold mb-6">Comments</h3>
+                        <PostCommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
+                        <PostCommentsList postId={post.id} key={commentRefreshKey} />
                     </div>
-                    <PostCommentsList postId={post.id} onCommentAdded={handleCommentAdded} key={commentRefreshKey} />
-                    <PostCommentForm postId={post.id} onCommentAdded={handleCommentAdded} />
                 </div>
             </div>
         </BasePage>
