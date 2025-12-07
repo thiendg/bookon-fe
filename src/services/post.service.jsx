@@ -31,9 +31,12 @@ export const postService = {
      * Create a new post.
      * @param {Object} postData - Data for the new post (title, content, user_id).
      */
-    createPost: async (postData) => {
-        return await axiosInstance.post(API_CONFIG.ENDPOINTS.POSTS, postData);
+    createPost(formData) {
+        return axiosInstance.post(`${API_CONFIG.ENDPOINTS.POSTS}`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
     },
+
 
     /**
      * Update an existing post.
