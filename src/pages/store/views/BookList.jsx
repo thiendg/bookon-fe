@@ -118,8 +118,6 @@ const BookList = () => {
             const response = await booksService.getBooks(params);
             const data = response.data || {};
 
-            console.debug('[BookList] booksService.getBooks response:', response);
-
             let list = [];
             let paginationInfo = {};
 
