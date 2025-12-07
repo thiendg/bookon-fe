@@ -12,46 +12,36 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login, isAdmin } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
+        try {
+            const result = await login(email, password, rememberMe);
 
-                    console.log('Login.jsx: handleSubmit triggered');
-                    try {
-                        const result = await login(email, password, rememberMe);
-                        console.log('Login.jsx: Login result:', result);
-        
-                        if (result.success) {
-                            const loggedInUser = result.data.user;
-                            console.log('Login.jsx: Logged in user:', loggedInUser);
-                            console.log('Login.jsx: Logged in user role_id:', loggedInUser ? loggedInUser.role_id : 'N/A');
-        
-                            if (loggedInUser && loggedInUser.role_id === 1) { // Assuming role_id 1 is Admin
-                                console.log('Login.jsx: User is Admin, navigating to /admin');
-                                navigate('/admin');
-                            } else {
-                                console.log('Login.jsx: User is not Admin, navigating to /');
-                                navigate('/');
-                            }
-                        } else {
-                            console.log('Login.jsx: Login failed with message:', result.message);
-                            setError(result.message || 'Login failed. Please check your credentials.');
-                        }
-                    } catch (err) {
-                        console.error('Login.jsx: An unexpected error occurred during login:', err);
-                        setError(err.message || 'An unexpected error occurred. Please try again.');
-                    } finally {
-                        setLoading(false);
-                        console.log('Login.jsx: handleSubmit finished.');
-                    }    };
+            if (result.success) {
+                const loggedInUser = result.data.user;
+                if (loggedInUser && loggedInUser.role_id === 1) {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
+            } else {
+                setError(result.message || 'Login failed. Please check your credentials.');
+            }
+        } catch (err) {
+            console.error('Login.jsx: An unexpected error occurred during login:', err);
+            setError(err.message || 'An unexpected error occurred. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
-            {/* Left-side: Image and Welcome Text */}
             <div className="hidden lg:block w-full lg:w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random/1200x900/?book,library')" }}>
                 <div className="flex items-center justify-center h-full bg-gray-900 bg-opacity-60 p-12 text-white">
                     <div className="max-w-md">
@@ -61,7 +51,6 @@ const Login = () => {
                 </div>
             </div>
 
-            {/* Right-side: Login Form */}
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
                 <div className="w-full max-w-sm">
                     <div className="text-center mb-8">

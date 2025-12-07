@@ -1,4 +1,3 @@
-// src/pages/admin/views/AdminDashboardPage.new.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -11,8 +10,6 @@ import {
     IconBook,
     IconShoppingCart,
     IconCurrencyDollar,
-    IconTrendingUp,
-    IconTrendingDown,
     IconRefresh,
 } from '@tabler/icons-react';
 
@@ -61,7 +58,6 @@ const AdminDashboardPage = () => {
 
             setStats(calculatedStats);
             //setRecentOrders(ordersResponse.data?.slice(0, 5) || []);
-            console.log('Recent Orders:', ordersResponse);
 
             // Fetch top books
             const topBooksResponse = await dashboardService.getTopBooks(5).catch(() => ({ data: [] }));
