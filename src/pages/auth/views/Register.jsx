@@ -29,7 +29,7 @@ const Register = () => {
         }
 
         try {
-            const result = await register(email, fullName, password);
+            const result = await register({ email, full_name: fullName, password });
 
             if (result.success) {
                 setSuccess('Registration successful! Check your email to verify your account.');
@@ -38,7 +38,7 @@ const Register = () => {
                 setEmail('');
                 setPassword('');
                 // Redirect after a short delay
-                setTimeout(() => navigate('/login'), 5000);
+                setTimeout(() => navigate('/verify-email'), 3000);
             } else {
                 setError(result.message || 'Registration failed. Please try again.');
             }
@@ -85,7 +85,7 @@ const Register = () => {
                                 {success}
                             </div>
                         )}
-                        
+
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="full-name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -103,7 +103,7 @@ const Register = () => {
                                     onChange={(e) => setFullName(e.target.value)}
                                 />
                             </div>
-                             <div>
+                            <div>
                                 <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1">
                                     Email address
                                 </label>
