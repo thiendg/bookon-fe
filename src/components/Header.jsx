@@ -34,7 +34,6 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [dropdownRef]);
-    console.log('settingData in Header:', settingData);
 
     return (
         <header className="sticky z-50 top-0 bg-white/97 shadow-2xs" {...props}>
@@ -46,7 +45,7 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
             <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
                 <div className="flex items-center">
                     <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
-                            <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain"/>                        <span className="hidden sm:inline">{settingData.siteName}</span>
+                        <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />                        <span className="hidden sm:inline">{settingData.siteName}</span>
                     </Link>
                 </div>
 

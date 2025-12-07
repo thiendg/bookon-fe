@@ -14,7 +14,6 @@ export const postService = {
      */
     getPosts: async (params = {}) => {
         const response = await axiosInstance.get(API_CONFIG.ENDPOINTS.POSTS, { params });
-        console.log(response)
         return response
 
     },
