@@ -149,8 +149,8 @@ const ContactInfo = () => {
     const settings = useSettings();
     return (
         <div className="text-center mt-5 text-muted">
-            <p>Alternatively, you can reach us at {settings.email || 'support@bookon.com'}</p>
-            <p>Or call us at {settings.phone || '+123 456 7890'}</p>
+            <p>Alternatively, you can reach us at {settings.company_email || 'support@bookon.com'}</p>
+            <p>Or call us at {settings.company_phone || '+123 456 7890'}</p>
         </div>
     );
 };

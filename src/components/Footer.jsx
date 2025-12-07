@@ -1,6 +1,16 @@
 import { Link } from "react-router-dom";
 
 const BaseFooter = ({ settingData, ...props }) => {
+    // If settings are still loading, render a minimal footer
+    if (settingData.loading || settingData.error) {
+        return (
+            <div className="w-full bg-[#C0D6D1] py-8 px-4" {...props}>
+                <div className="container mx-auto text-center text-gray-700">
+                    Loading Footer...
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full bg-[#C0D6D1] py-8 px-4" {...props}>
@@ -10,14 +20,14 @@ const BaseFooter = ({ settingData, ...props }) => {
                     <div className="w-full md:w-1/3 mb-6 md:mb-0 text-gray-800">
                         <div className="flex justify-center md:justify-start items-center mb-4">
                             <Link to="/" className="text-2xl font-bold flex items-center text-gray-900 gap-x-2 no-underline!">
-                                <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-16 md:w-16" alt={settingData.siteName} />
-                                {settingData.siteName}
+                                <img src={settingData.settings.company_logo_url ? `${import.meta.env.VITE_API_URL}/${settingData.settings.company_logo_url}` : '/bookon-logo.png'} className="w-16 md:w-16" alt={settingData.settings.company_name} />
+                                {settingData.settings.company_name}
                             </Link>
                         </div>
                         <div className="text-sm space-y-2">
-                            <p><span className="font-bold">Address</span>: <a href={`https://www.google.com/maps/search/${settingData.address}`} className="hover:underline hover:text-teal-700">{settingData.address}</a></p>
-                            <p><span className="font-bold">Phone</span>: {settingData.phone}</p>
-                            <p><span className="font-bold">Email</span>: <a href={`mailto:${settingData.email}`} className="hover:underline hover:text-teal-700">{settingData.email}</a></p>
+                            <p><span className="font-bold">Address</span>: <a href={`https://www.google.com/maps/search/${settingData.settings.company_address}`} className="hover:underline hover:text-teal-700">{settingData.settings.company_address}</a></p>
+                            <p><span className="font-bold">Phone</span>: {settingData.settings.company_phone}</p>
+                            <p><span className="font-bold">Email</span>: <a href={`mailto:${settingData.settings.company_email}`} className="hover:underline hover:text-teal-700">{settingData.settings.company_email}</a></p>
                         </div>
                     </div>
 
@@ -36,9 +46,9 @@ const BaseFooter = ({ settingData, ...props }) => {
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
                         <div className="font-bold mb-2 text-gray-900">Follow us</div>
                         <div className="space-y-1 flex flex-col text-gray-700">
-                            <a href={settingData.facebook} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Facebook</a>
-                            <a href={settingData.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Twitter</a>
-                            <a href={settingData.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Instagram</a>
+                            <a href={settingData.settings.facebook} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Facebook</a>
+                            <a href={settingData.settings.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Twitter</a>
+                            <a href={settingData.settings.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Instagram</a>
                         </div>
                     </div>
 

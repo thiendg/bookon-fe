@@ -18,19 +18,6 @@ const AdminHeader = ({ currentPage, settingData, ...props }) => {
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
-    const handleLogout = async () => {
-        await logout();
-        setDropdownOpen(false);
-        navigate('/login');
-    };
-
-    const handleSwitchToCustomerView = () => {
-        if (isAdmin) {
-            toggleViewMode(); // Toggle the view mode
-            navigate('/'); // Navigate to the customer homepage
-        }
-    };
-
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -44,18 +31,47 @@ const AdminHeader = ({ currentPage, settingData, ...props }) => {
         };
     }, [dropdownRef]);
 
+    const handleLogout = async () => {
+        await logout();
+        setDropdownOpen(false);
+        navigate('/login');
+    };
+
+    const handleSwitchToCustomerView = () => {
+        if (isAdmin) {
+            toggleViewMode(); // Toggle the view mode
+            navigate('/'); // Navigate to the customer homepage
+        }
+    };
+
+    // If settings are still loading, render a minimal header or null
+    if (settingData.loading || settingData.error) {
+        return (
+            <header className="sticky z-50 top-0 bg-white/97 shadow-2xs" {...props}>
+                <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
+                    <div className="flex items-center">
+                        <Link to="/admin" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
+                            <img src="/bookon-logo.png" className="w-8 md:w-8 h-auto object-contain" alt="Loading" />
+                            <span className="hidden sm:inline">Loading Admin...</span>
+                        </Link>
+                    </div>
+                </nav>
+            </header>
+        );
+    }
+
     return (
         <header className="sticky z-50 top-0 bg-white/97 shadow-2xs" {...props}>
-            {settingData.adBanner && (
+            {settingData.settings.adBanner && (
                 <div className="bg-[#52786F] h-max w-full text-white text-center font-semibold text-shadow-2xs py-2">
-                    {settingData.adBanner}
+                    {settingData.settings.adBanner}
                 </div>
             )}
             <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
                 <div className="flex items-center">
                     <Link to="/admin" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
-                        <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />
-                        <span className="hidden sm:inline">{settingData.siteName} (Admin)</span>
+                        <img src={settingData.settings.company_logo_url ? `${import.meta.env.VITE_API_URL}/${settingData.settings.company_logo_url}` : '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />
+                        <span className="hidden sm:inline">{settingData.settings.company_name} (Admin)</span>
                     </Link>
                 </div>
 
