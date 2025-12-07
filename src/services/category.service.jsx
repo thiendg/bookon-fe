@@ -16,6 +16,13 @@ export const categoryService = {
     },
 
     /**
+     * Get all categories formatted as select options.
+     */
+    getAllCategories: async () => {
+        return await axiosInstance.get(API_CONFIG.ENDPOINTS.CATEGORY_SELECT_OPTIONS);
+    },
+
+    /**
      * Get a single category by its ID.
      * @param {number} id - The ID of the category.
      */

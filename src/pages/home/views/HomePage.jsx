@@ -1,6 +1,7 @@
 // src/pages/home/views/HomePage.jsx
-import React, { useState, useEffect, useCallback } from 'react';
-import { bookService } from '@/services/book.service';
+import React, { useState, useEffect, useCallback, useMemo } from 'react'; // Added useMemo
+import { booksService } from '@/services/books.service';
+import { categoryService } from '@/services/category.service'; // New Import
 import { API_CONFIG } from '@/config/api.config';
 import BasePage from '@/components/BasePage';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
@@ -58,38 +59,97 @@ const HomePage = () => {
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
 
+    // New state for pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10); // Books per page
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
+    // New state for categories and filters
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+
     const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
+    const debouncedMinPrice = useDebounce(minPrice, 500);
+    const debouncedMaxPrice = useDebounce(maxPrice, 500);
 
     const _unwrapResponse = (resp) => {
         if (!resp) return {};
         if (Array.isArray(resp)) return resp;
-        if (resp.data && (Array.isArray(resp.data) || resp.data.pagination || resp.data.data)) return resp.data;
+        // Check for common pagination structures
+        if (resp.data && resp.data.pagination) return resp.data;
+        if (resp.data && Array.isArray(resp.data.data)) return resp.data; // For list within data
         return resp;
     };
+
+    // Effect to fetch categories on component mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await categoryService.getAllCategories(); // Assuming this returns { data: { options: [...] }, ... }
+                if (response && response.success && Array.isArray(response.data.options)) {
+                    setCategories(response.data.options);
+                } else {
+                    console.error('Failed to fetch categories:', response);
+                }
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+            }
+        };
+        fetchCategories();
+    }, []); // Empty dependency array means this runs once on mount
 
     const fetchBooks = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const params = debouncedSearchTerm ? { search: debouncedSearchTerm } : {};
-            const response = await bookService.getBooks(params);
-            const data = _unwrapResponse(response);
-            console.debug('[HomePage] bookService.getBooks response:', response);
-            let list = [];
-            if (Array.isArray(data)) list = data;
-            else if (Array.isArray(data.data)) list = data.data;
-            else if (response && response.success && Array.isArray(response.data)) list = response.data;
+            const params = {
+                page: currentPage,
+                pageSize: pageSize,
+                ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+                ...(selectedCategory && { category_id: selectedCategory }),
+                ...(debouncedMinPrice && { min_price: debouncedMinPrice }),
+                ...(debouncedMaxPrice && { max_price: debouncedMaxPrice }),
+            };
 
-            console.debug('normalized book list:', list);
+            const response = await booksService.getBooks(params);
+            const data = _unwrapResponse(response);
+
+            console.debug('[HomePage] booksService.getBooks response:', response);
+
+            let list = [];
+            let paginationInfo = {};
+
+            if (data && data.pagination) {
+                list = data.data || [];
+                paginationInfo = data.pagination;
+            } else if (Array.isArray(data)) {
+                list = data;
+                // If no pagination info, assume single page
+                paginationInfo = { totalItems: data.length, totalPages: 1, currentPage: 1, pageSize: data.length, hasNextPage: false, hasPrevPage: false };
+            } else if (Array.isArray(data.data)) {
+                list = data.data;
+                paginationInfo = { totalItems: data.data.length, totalPages: 1, currentPage: 1, pageSize: data.data.length, hasNextPage: false, hasPrevPage: false };
+            }
+
             setBooks(list);
+            setTotalItems(paginationInfo.totalItems || 0);
+            setTotalPages(paginationInfo.totalPages || 1);
+            setCurrentPage(paginationInfo.currentPage || 1);
+
         } catch (err) {
             console.error('[HomePage] fetchBooks error:', err);
             setError(err.message || 'An error occurred while fetching books.');
             setBooks([]);
+            setTotalItems(0);
+            setTotalPages(1);
+            setCurrentPage(1);
         } finally {
             setLoading(false);
         }
-    }, [debouncedSearchTerm]);
+    }, [currentPage, pageSize, debouncedSearchTerm, selectedCategory, debouncedMinPrice, debouncedMaxPrice]); // Dependencies for useCallback
 
     useEffect(() => {
         fetchBooks();
@@ -109,9 +169,9 @@ const HomePage = () => {
                     </p>
                 </div>
 
-                {/* Search Bar */}
-                <div className="mb-8 max-w-lg mx-auto">
-                    <div className="relative">
+                {/* Search, Category, and Price Filters */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                    <div className="relative flex-grow">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
                         </div>
@@ -121,6 +181,47 @@ const HomePage = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                    </div>
+
+                    {/* Category Filter */}
+                    <select
+                        value={selectedCategory}
+                        onChange={(e) => {
+                            setSelectedCategory(e.target.value);
+                            setCurrentPage(1); // Reset to first page on category change
+                        }}
+                        className="block w-full sm:w-auto pr-8 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                        <option value="">All Categories</option>
+                        {categories.map((cat) => (
+                            <option key={cat.value} value={cat.value}>
+                                {cat.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Price Range Filter */}
+                    <div className="flex gap-2 w-full sm:w-auto">
+                        <input
+                            type="number"
+                            placeholder="Min Price"
+                            value={minPrice}
+                            onChange={(e) => {
+                                setMinPrice(e.target.value);
+                                setCurrentPage(1); // Reset to first page on price change
+                            }}
+                            className="block w-1/2 pr-3 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        />
+                        <input
+                            type="number"
+                            placeholder="Max Price"
+                            value={maxPrice}
+                            onChange={(e) => {
+                                setMaxPrice(e.target.value);
+                                setCurrentPage(1); // Reset to first page on price change
+                            }}
+                            className="block w-1/2 pr-3 pl-3 py-2.5 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                     </div>
                 </div>
@@ -154,7 +255,34 @@ const HomePage = () => {
                     )}
                 </div>
 
-                {/* TODO: Add Pagination Controls */}
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="flex justify-center mt-8 space-x-2">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Previous
+                        </button>
+                        {[...Array(totalPages)].map((_, index) => (
+                            <button
+                                key={index + 1}
+                                onClick={() => setCurrentPage(index + 1)}
+                                className={`px-4 py-2 border rounded-md ${currentPage === index + 1 ? 'bg-indigo-600 text-white' : 'text-gray-700 hover:bg-gray-100'}`}
+                            >
+                                {index + 1}
+                            </button>
+                        ))}
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
             </div>
         </BasePage>
     );
