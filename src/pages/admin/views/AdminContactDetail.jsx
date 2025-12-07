@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { contactService } from '@/services/contact.service';
+import { settingService } from '@/services/setting.service';
+import { useAuth } from '@/hooks/useAuth.hook.jsx';
 import { Helmet } from 'react-helmet-async';
 import {
     IconArrowLeft,
@@ -32,11 +34,12 @@ const AdminContactDetail = () => {
     const [status, setStatus] = useState('');
     const [replyMessage, setReplyMessage] = useState('');
     const [sendingReply, setSendingReply] = useState(false);
+    const { user } = useAuth();
 
     const CONTACT_STATUS_OPTIONS = [
-        { value: 'pending', label: 'Pending' },
+        { value: 'new', label: 'New' },
         { value: 'read', label: 'Read' },
-        { value: 'responded', label: 'Responded' },
+        { value: 'replied', label: 'Replied' },
     ];
 
     const fetchContact = useCallback(async () => {
@@ -104,20 +107,57 @@ const AdminContactDetail = () => {
         setSuccessMessage('');
 
         try {
-            // This would typically send an email to the contact's email address
-            // For now, we'll update the contact with the reply and change status to "responded"
-            const response = await contactService.updateContact(id, {
-                status: 'responded',
-                reply: replyMessage,
-            });
-            
-            if (response.success) {
-                setSuccessMessage('Reply sent successfully!');
-                setReplyMessage('');
-                fetchContact();
-            } else {
-                throw new Error(response.message || 'Failed to send reply');
+            const destinationEmail = contact?.destination_email || contact?.email;
+
+            // Sender info from current authenticated user (admin)
+            const senderEmail = user?.email || (await (async () => {
+                // fallback to settings if user not available
+                try {
+                    const sresp = await settingService.getAllSettings();
+                    if (sresp && sresp.success) {
+                        const items = sresp.data.posts || sresp.data || [];
+                        const map = {};
+                        items.forEach(it => { if (it && it.setting_key) map[it.setting_key] = it.setting_value; });
+                        return map.company_email || map.site_email || 'no-reply@bookon.com';
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                return 'no-reply@bookon.com';
+            })());
+
+            const senderName = user?.full_name || user?.name || senderEmail;
+
+            // Create a new contact record representing the outgoing reply
+            const newContactPayload = {
+                name: senderName,
+                email: senderEmail,
+                subject: contact.subject ? `Re: ${contact.subject}` : `Reply to contact #${contact.id}`,
+                message: replyMessage,
+                destination_email: destinationEmail,
+                status: 'replied'
+            };
+
+            const createResp = await contactService.createContact(newContactPayload);
+            if (!createResp || !createResp.success) {
+                throw new Error(createResp?.message || 'Failed to create reply record');
             }
+
+            // Update the original contact to mark it as replied
+            const updateResp = await contactService.updateContact(id, { status: 'replied' });
+            if (!updateResp || !updateResp.success) {
+                // created reply succeeded, but updating original failed — show warning
+                setSuccessMessage('Reply created, but failed to update original contact status.');
+                fetchContact();
+                setReplyMessage('');
+                return;
+            }
+
+            setSuccessMessage('Reply sent and recorded successfully!');
+            setReplyMessage('');
+            fetchContact();
+        } catch (err) {
+            setError(err.message || 'Failed to send reply');
         } finally {
             setSendingReply(false);
         }
