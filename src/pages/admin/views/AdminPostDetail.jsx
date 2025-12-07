@@ -11,6 +11,7 @@ import {
 import AdminForm from '@/components/admin/AdminForm';
 import TextInput from '@/components/admin/TextInput';
 import SelectInput from '@/components/admin/SelectInput';
+import AdminPostCommentsList from './AdminPostCommentList';
 
 // For user selection, will eventually use a select endpoint
 const DUMMY_USERS = [
@@ -187,6 +188,11 @@ const AdminPostDetail = () => {
                     icon={IconUser}
                 />
             </AdminForm>
+            <div className="mt-6">
+    <h2 className="mb-3">Comments</h2>
+    <AdminPostCommentsList postId={id} />
+</div>
+
         </>
     );
 };
