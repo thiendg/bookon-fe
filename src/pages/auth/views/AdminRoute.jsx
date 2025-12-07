@@ -4,7 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.hook';
 
 const AdminRoute = ({ children }) => {
-    const { isAuthenticated, isAdmin, loading } = useAuth();
+    const { isAuthenticated, user, loading } = useAuth(); // Get user object directly
     const location = useLocation();
 
     if (loading) {
@@ -26,8 +26,9 @@ const AdminRoute = ({ children }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
-    if (!isAdmin) {
-        // Redirect non-admin users to the home page or an 'unauthorized' page
+    // Check if user is an admin using role_id
+    if (!user || user.role_id !== 1) { // Assuming role_id 1 is Admin
+        // Redirect non-admin users to the home page
         return <Navigate to="/" replace />;
     }
 

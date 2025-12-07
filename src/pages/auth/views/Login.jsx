@@ -12,7 +12,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login, isAdmin } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -24,7 +24,12 @@ const Login = () => {
             const result = await login(email, password, rememberMe);
 
             if (result.success) {
-                navigate('/');
+                const loggedInUser = result.data.user;
+                if (loggedInUser && loggedInUser.role_id === 1) { // Assuming role_id 1 is Admin
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             } else {
                 setError(result.message || 'Login failed. Please check your credentials.');
             }
@@ -59,14 +64,14 @@ const Login = () => {
                             Login to Your Account
                         </h2>
                     </div>
-                    
+
                     <form className="space-y-6" onSubmit={handleSubmit}>
                         {error && (
                             <div className="p-3 text-sm text-red-800 bg-red-100 border border-red-200 rounded-lg" role="alert">
                                 {error}
                             </div>
                         )}
-                        
+
                         <div className="space-y-4">
                             <div>
                                 <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1">
