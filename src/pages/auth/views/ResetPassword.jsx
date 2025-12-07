@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.hook';
-import { BookOpenIcon, KeyIcon } from '@heroicons/react/24/solid';
+import { BookOpenIcon, KeyIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 const ResetPassword = () => {
     const navigate = useNavigate();
@@ -11,6 +11,8 @@ const ResetPassword = () => {
 
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false); // New state for password visibility
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // New state for confirm password visibility
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
@@ -46,7 +48,7 @@ const ResetPassword = () => {
             const result = await resetPassword(token, password);
             if (result.success) {
                 setSuccess('Password has been reset successfully! Redirecting to login...');
-                setTimeout(() => navigate('/login'), 3000);
+                navigate('/login'); // Redirect immediately
             } else {
                 setError(result.message || 'Failed to reset password. The link may have expired.');
             }
@@ -99,35 +101,61 @@ const ResetPassword = () => {
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                                     New Password
                                 </label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    required
-                                    minLength="8"
-                                    className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                    placeholder="Enter your new password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    disabled={!token || !!success}
-                                />
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        required
+                                        minLength="8"
+                                        className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10"
+                                        placeholder="Enter your new password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        disabled={!token || !!success}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeIcon className="h-4 w-4" />
+                                        ) : (
+                                            <EyeSlashIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                             <div>
                                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
                                     Confirm New Password
                                 </label>
-                                <input
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    type="password"
-                                    required
-                                    minLength="8"
-                                    className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                    placeholder="Confirm your new password"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    disabled={!token || !!success}
-                                />
+                                <div className="relative">
+                                    <input
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        type={showConfirmPassword ? "text" : "password"}
+                                        required
+                                        minLength="8"
+                                        className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10"
+                                        placeholder="Confirm your new password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        disabled={!token || !!success}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    >
+                                        {showConfirmPassword ? (
+                                            <EyeIcon className="h-4 w-4" />
+                                        ) : (
+                                            <EyeSlashIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

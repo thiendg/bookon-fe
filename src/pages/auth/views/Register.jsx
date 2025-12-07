@@ -2,12 +2,15 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.hook';
-import { BookOpenIcon, UserPlusIcon } from '@heroicons/react/24/solid';
+import { BookOpenIcon, UserPlusIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
 
 const Register = () => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [passwordVerify, setPasswordVerify] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordVerify, setShowPasswordVerify] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
@@ -28,6 +31,12 @@ const Register = () => {
             return;
         }
 
+        if (password !== passwordVerify) {
+            setError('Passwords do not match.');
+            setLoading(false);
+            return;
+        }
+
         try {
             const result = await register({ email, full_name: fullName, password });
 
@@ -37,8 +46,9 @@ const Register = () => {
                 setFullName('');
                 setEmail('');
                 setPassword('');
+                setPasswordVerify(''); // Clear passwordVerify as well
                 // Redirect after a short delay
-                setTimeout(() => navigate('/verify-email'), 3000);
+                navigate('/verify-email'); // Redirect immediately
             } else {
                 setError(result.message || 'Registration failed. Please try again.');
             }
@@ -123,17 +133,59 @@ const Register = () => {
                                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                                     Password
                                 </label>
-                                <input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    required
-                                    className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                                    placeholder="Minimum 8 characters"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
+                                <div className="relative">
+                                    <input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        autoComplete="new-password"
+                                        required
+                                        className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10" // Added pr-10 for icon space
+                                        placeholder="Minimum 8 characters"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? (
+                                            <EyeIcon className="h-4 w-4" />
+                                        ) : (
+                                            <EyeSlashIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label htmlFor="password_verify" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Confirm Password
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        id="password_verify"
+                                        name="password_verify"
+                                        type={showPasswordVerify ? "text" : "password"}
+                                        autoComplete="new-password"
+                                        required
+                                        className="block w-full px-4 py-3 text-gray-900 placeholder-gray-400 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition pr-10" // Added pr-10 for icon space
+                                        placeholder="Confirm your password"
+                                        value={passwordVerify}
+                                        onChange={(e) => setPasswordVerify(e.target.value)}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-600"
+                                        onClick={() => setShowPasswordVerify(!showPasswordVerify)}
+                                    >
+                                        {showPasswordVerify ? (
+                                            <EyeIcon className="h-4 w-4" />
+                                        ) : (
+                                            <EyeSlashIcon className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
