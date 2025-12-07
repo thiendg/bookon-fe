@@ -33,7 +33,7 @@ export const cartService = {
             // Item exists, update quantity
             const updatedCart = [...currentCart];
             updatedCart[existingItemIndex].quantity += quantity;
-                        cartService.saveCart(updatedCart);
+            cartService.saveCart(updatedCart);
         } else {
             // Item does not exist, add new item
             const newCart = [...currentCart, { ...item, quantity }];
@@ -51,7 +51,7 @@ export const cartService = {
         const updatedCart = currentCart.map(cartItem =>
             cartItem.id === itemId ? { ...cartItem, quantity } : cartItem
         ).filter(cartItem => cartItem.quantity > 0); // Remove if quantity is 0 or less
-                    cartService.saveCart(updatedCart);
+        cartService.saveCart(updatedCart);
     },
 
     /**
@@ -61,7 +61,7 @@ export const cartService = {
     removeItem: (itemId) => {
         const currentCart = cartService.cartValue;
         const updatedCart = currentCart.filter(cartItem => cartItem.id !== itemId);
-                    cartService.saveCart(updatedCart);
+        cartService.saveCart(updatedCart);
     },
 
     /**
@@ -78,7 +78,6 @@ export const cartService = {
     checkout: async () => {
         // Implement logic to send cart items to backend orders API
         // For now, it's a placeholder
-        console.log("Checking out cart:", cartService.cartValue);
         alert("Checkout functionality not yet fully implemented. See console for cart contents.");
         // After successful checkout, clear cart:
         // cartService.clearCart();

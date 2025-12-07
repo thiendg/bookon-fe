@@ -42,7 +42,6 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
                         instagram: map.company_instagram || map.instagram || '',
                         company_logo_url: map.company_logo_url ? `${import.meta.env.VITE_API_URL}/${map.company_logo_url}` : '/bookon-logo.png'
                     };
-                    console.log('Loaded settings:', computed);
                     setSettingsData(prev => ({ ...prev, ...computed }));
                 }
             } catch (err) {
@@ -50,8 +49,8 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
                 console.error('Failed to load settings', err);
             }
         };
-        loadSettings();        
-        
+        loadSettings();
+
     }, []);
     const categories = [
         {

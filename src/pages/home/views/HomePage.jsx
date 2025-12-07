@@ -36,7 +36,7 @@ const BookCard = ({ book }) => {
 
     return (
         <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col h-full">
-            <img src={imageUrl} alt={book.title} className="w-full h-48 sm:h-64 object-cover"/>
+            <img src={imageUrl} alt={book.title} className="w-full h-48 sm:h-64 object-cover" />
             <div className="p-4 flex flex-col flex-grow">
                 <h3 className="font-bold text-md sm:text-lg mb-2 truncate">{book.title}</h3>
                 <p className="text-gray-600 text-sm mb-4 flex-grow">{book.author || 'Unknown Author'}</p>
@@ -57,7 +57,7 @@ const HomePage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    
+
     const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
     const _unwrapResponse = (resp) => {
@@ -71,7 +71,6 @@ const HomePage = () => {
         setLoading(true);
         setError('');
         try {
-            console.log('[HomePage] fetchBooks called, search=', JSON.stringify(debouncedSearchTerm));
             const params = debouncedSearchTerm ? { search: debouncedSearchTerm } : {};
             const response = await bookService.getBooks(params);
             const data = _unwrapResponse(response);
@@ -79,7 +78,6 @@ const HomePage = () => {
             let list = [];
             if (Array.isArray(data)) list = data;
             else if (Array.isArray(data.data)) list = data.data;
-            else if (response && Array.isArray(response.data)) list = response.data;
             else if (response && response.success && Array.isArray(response.data)) list = response.data;
 
             console.debug('normalized book list:', list);
@@ -131,7 +129,7 @@ const HomePage = () => {
                 <div>
                     {loading ? (
                         <div className="text-center py-10">
-                             <svg className="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin h-8 w-8 text-indigo-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -149,7 +147,7 @@ const HomePage = () => {
                             ))}
                         </div>
                     ) : (
-                         <div className="text-center py-10 px-4 bg-gray-50 rounded-lg">
+                        <div className="text-center py-10 px-4 bg-gray-50 rounded-lg">
                             <h3 className="font-semibold text-gray-800">No Books Found</h3>
                             <p className="text-gray-500">No books matched your search criteria. Try a different search.</p>
                         </div>

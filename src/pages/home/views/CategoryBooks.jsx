@@ -25,11 +25,10 @@ const BookCard = ({ book }) => {
                 <p className="text-gray-600 text-sm mb-4 flex-grow">{book.author || 'Unknown Author'}</p>
                 <div className="flex flex-col sm:flex-row justify-between items-center mt-auto">
                     <span className="text-indigo-600 font-semibold mb-2 sm:mb-0">{formatCurrency(book.price)}</span>
-                    <button 
+                    <button
                         onClick={(e) => {
-                            e.preventDefault(); 
+                            e.preventDefault();
                             // Add to cart logic here
-                            console.log(`Book ${book.id} added to cart`);
                         }}
                         className="px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 w-full sm:w-auto"
                     >
