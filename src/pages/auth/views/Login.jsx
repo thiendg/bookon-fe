@@ -20,25 +20,34 @@ const Login = () => {
         setError('');
         setLoading(true);
 
-        try {
-            const result = await login(email, password, rememberMe);
-
-            if (result.success) {
-                const loggedInUser = result.data.user;
-                if (loggedInUser && loggedInUser.role_id === 1) { // Assuming role_id 1 is Admin
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }
-            } else {
-                setError(result.message || 'Login failed. Please check your credentials.');
-            }
-        } catch (err) {
-            setError(err.message || 'An unexpected error occurred. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
+                    console.log('Login.jsx: handleSubmit triggered');
+                    try {
+                        const result = await login(email, password, rememberMe);
+                        console.log('Login.jsx: Login result:', result);
+        
+                        if (result.success) {
+                            const loggedInUser = result.data.user;
+                            console.log('Login.jsx: Logged in user:', loggedInUser);
+                            console.log('Login.jsx: Logged in user role_id:', loggedInUser ? loggedInUser.role_id : 'N/A');
+        
+                            if (loggedInUser && loggedInUser.role_id === 1) { // Assuming role_id 1 is Admin
+                                console.log('Login.jsx: User is Admin, navigating to /admin');
+                                navigate('/admin');
+                            } else {
+                                console.log('Login.jsx: User is not Admin, navigating to /');
+                                navigate('/');
+                            }
+                        } else {
+                            console.log('Login.jsx: Login failed with message:', result.message);
+                            setError(result.message || 'Login failed. Please check your credentials.');
+                        }
+                    } catch (err) {
+                        console.error('Login.jsx: An unexpected error occurred during login:', err);
+                        setError(err.message || 'An unexpected error occurred. Please try again.');
+                    } finally {
+                        setLoading(false);
+                        console.log('Login.jsx: handleSubmit finished.');
+                    }    };
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
