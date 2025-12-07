@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Outlet, Link } from 'react-router-dom';
+import { Outlet, Link, useNavigate } from 'react-router-dom';
 import AdminSidebarComponent from '@/components/admin/AdminSidebarComponent';
 import { settingService } from '@/services/setting.service';
+import { useAuth } from '@/hooks/useAuth.hook';
+import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 const AdminLayout = () => {
   const [logoUrl, setLogoUrl] = useState('/bookon-logo.png');
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Dynamically load Tabler's theme script if not already loaded
-    // This part assumes that tabler.min.js (which includes tabler-theme.min.js behavior)
-    // is already loaded via main.jsx as per previous step.
-    // If not, we might need to load it here or ensure it's loaded globally.
-    // For now, assuming core tabler.min.js handles the initial theme setup.
-
-    // Also need to handle dynamic loading of the js for charts and maps
-    // These scripts are currently outside React's lifecycle.
-    // I'll manage these in AdminDashboardPage.jsx where the charts are actually rendered.
-  }, []);
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   useEffect(() => {
     const loadLogo = async () => {
@@ -42,7 +39,6 @@ const AdminLayout = () => {
           <button
             className="navbar-toggler"
             type="button"
-            // The onClick and aria-expanded are handled by AdminSidebarComponent internally
             aria-controls="navbar-menu"
             aria-label="Toggle navigation"
           >
@@ -60,7 +56,6 @@ const AdminLayout = () => {
             </Link>
           </div>
           <div className="navbar-nav flex-row order-md-last">
-            {/* Dark/Light mode toggle, notifications, app menu - keeping simplified for now */}
             <div className="nav-item dropdown">
               <Link
                 to="#"
@@ -68,16 +63,19 @@ const AdminLayout = () => {
                 data-bs-toggle="dropdown"
                 aria-label="Open user menu"
               >
-                <span className="avatar avatar-sm" style={{ backgroundImage: 'url(/user-avatar.png)' }}></span> {/* Placeholder avatar */}
+                <span className="avatar avatar-sm" style={{ backgroundImage: `url(${user?.avatar_url || '/user-avatar.png'})` }}></span>
                 <div className="d-none d-xl-block ps-2">
-                  <div>Admin User</div>
-                  <div className="mt-1 small text-secondary">Administrator</div>
+                  <div>{user?.full_name || 'Admin User'}</div>
+                  <div className="mt-1 small text-secondary">{user?.email}</div>
                 </div>
               </Link>
               <div className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <Link to="/admin/profile" className="dropdown-item">Profile</Link>
                 <div className="dropdown-divider"></div>
-                <Link to="/logout" className="dropdown-item">Logout</Link>
+                <button onClick={handleLogout} className="dropdown-item">
+                  <ArrowRightOnRectangleIcon className="h-5 w-5 mr-2" />
+                  Logout
+                </button>
               </div>
             </div>
           </div>

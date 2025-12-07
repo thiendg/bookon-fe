@@ -50,20 +50,20 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex">
-            {/* Left-side: Image */}
-            <div className="hidden lg:block relative w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random/1200x900/?book,education')" }}>
-                <div className="absolute inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center p-12 text-white">
-                    <div>
+        <div className="min-h-screen bg-gray-50 flex flex-col lg:flex-row">
+            {/* Left-side: Image and Welcome Text */}
+            <div className="hidden lg:block w-full lg:w-1/2 bg-cover bg-center" style={{ backgroundImage: "url('https://source.unsplash.com/random/1200x900/?book,education')" }}>
+                <div className="flex items-center justify-center h-full bg-gray-900 bg-opacity-60 p-12 text-white">
+                    <div className="max-w-md">
                         <h1 className="text-4xl font-bold leading-tight mb-4">Join the BookOn Community</h1>
                         <p className="text-lg text-gray-200">Create an account to start your journey, discover new books, and connect with fellow readers.</p>
                     </div>
                 </div>
             </div>
 
-            {/* Right-side: Form */}
-            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12">
-                <div className="w-full max-w-md">
+            {/* Right-side: Registration Form */}
+            <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
+                <div className="w-full max-w-sm">
                     <div className="text-center mb-8">
                         <Link to="/" className="inline-flex items-center text-3xl font-bold text-gray-900">
                             <BookOpenIcon className="h-8 w-8 mr-2 text-indigo-600" />
@@ -140,7 +140,7 @@ const Register = () => {
                         <div>
                             <button
                                 type="submit"
-                                disabled={loading || success}
+                                disabled={loading || !!success}
                                 className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-400 disabled:cursor-not-allowed transition-colors"
                             >
                                 {loading ? (
@@ -171,5 +171,6 @@ const Register = () => {
         </div>
     );
 };
+
 
 export default Register;
