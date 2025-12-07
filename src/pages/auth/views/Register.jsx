@@ -92,7 +92,7 @@ const Register = () => {
                                     Full Name
                                 </label>
                                 <input
-                                    id="full-name"
+                                    id="full_name"
                                     name="full-name"
                                     type="text"
                                     autoComplete="name"

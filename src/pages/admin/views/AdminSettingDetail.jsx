@@ -42,7 +42,6 @@ const AdminSettingDetail = () => {
             if (response.success) {
                 const settingsData = response.data.data || [];
                 setSettings(settingsData);
-                console.log("Fetched settings:", settingsData);
                 // Initialize editing state for all settings
                 const editState = {};
                 settingsData.forEach(setting => {

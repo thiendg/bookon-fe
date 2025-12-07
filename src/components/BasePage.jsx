@@ -4,6 +4,7 @@ import BaseHeader from "./Header";
 import { useEffect, useState } from 'react';
 import { settingService } from '@/services/setting.service';
 import SettingsContext from '@/context/SettingsContext';
+import { set } from "date-fns";
 
 
 export default function BasePage({ title, children, currentPage = "home", ...props }) {
@@ -16,15 +17,15 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
         facebook: "",
         twitter: "",
         instagram: "",
-        logoUrl: '/bookon-logo.png'
+        company_logo_url: '/bookon-logo.png'
     });
 
     useEffect(() => {
         const loadSettings = async () => {
             try {
                 const resp = await settingService.getAllSettings();
-                if (resp && resp.success) {
-                    const items = resp.data.posts || resp.data || [];
+                if (resp.success) {
+                    const items = resp.data.data || resp.data || [];
                     const map = {};
                     items.forEach(it => {
                         if (it && it.setting_key) map[it.setting_key] = it.setting_value;
@@ -39,9 +40,9 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
                         facebook: map.company_facebook || map.facebook || '',
                         twitter: map.company_twitter || map.twitter || '',
                         instagram: map.company_instagram || map.instagram || '',
-                        logoUrl: map.company_logo_url ? `${import.meta.env.VITE_API_URL}${map.company_logo_url}` : '/bookon-logo.png'
+                        company_logo_url: map.company_logo_url ? `${import.meta.env.VITE_API_URL}/${map.company_logo_url}` : '/bookon-logo.png'
                     };
-
+                    console.log('Loaded settings:', computed);
                     setSettingsData(prev => ({ ...prev, ...computed }));
                 }
             } catch (err) {
@@ -49,9 +50,9 @@ export default function BasePage({ title, children, currentPage = "home", ...pro
                 console.error('Failed to load settings', err);
             }
         };
-        loadSettings();
+        loadSettings();        
+        
     }, []);
-
     const categories = [
         {
             name: "Fantasy",
