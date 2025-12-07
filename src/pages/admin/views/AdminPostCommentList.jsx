@@ -51,7 +51,7 @@ const AdminPostCommentList = () => {
             const response = await postCommentService.getPostComments(params);
             if (response.success) {
                 // Backend returns 'post_comments', 'total', 'page', 'limit'
-                setPostComments(response.data.post_comments || []);
+                setPostComments(response.data.posts || []);
                 setTotalPages(Math.ceil(response.data.total / limit) || 1);
                 setTotalItems(response.data.total || 0);
             } else {
@@ -177,7 +177,7 @@ const AdminPostCommentList = () => {
                                                 <td>{comment.id}</td>
                                                 <td>{comment.post_id}</td>
                                                 <td>{comment.user_id}</td>
-                                                <td className="text-truncate" style={{ maxWidth: '200px' }}>{comment.comment_text}</td>
+                                                <td className="text-truncate" style={{ maxWidth: '200px' }}>{comment.content}</td>
                                                 <td>{new Date(comment.created_at * 1000).toLocaleDateString()}</td>
                                                 <td>
                                                     <div className="btn-list flex-nowrap">
