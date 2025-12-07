@@ -1,16 +1,16 @@
 import { Link } from "react-router-dom";
 
-const BaseFooter = ({ settingData, categories, recommendations, ...props }) => {
+const BaseFooter = ({ settingData, ...props }) => {
 
     return (
         <div className="w-full bg-[#C0D6D1] py-8 px-4" {...props}>
             <div className="container mx-auto">
-                <div className="flex flex-wrap justify-between text-center md:text-left">
+                <div className="flex flex-col md:flex-row md:flex-nowrap justify-between text-center md:text-left">
                     {/* Logo and Info */}
-                    <div className="w-full md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
+                    <div className="w-full md:w-1/3 mb-6 md:mb-0 text-gray-800">
                         <div className="flex justify-center md:justify-start items-center mb-4">
-                            <Link to="/" className="text-2xl font-bold flex items-center text-black gap-x-2 no-underline!">
-                                <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-16 md:w-16" />
+                            <Link to="/" className="text-2xl font-bold flex items-center text-gray-900 gap-x-2 no-underline!">
+                                <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-16 md:w-16" alt={settingData.siteName} />
                                 {settingData.siteName}
                             </Link>
                         </div>
@@ -21,35 +21,30 @@ const BaseFooter = ({ settingData, categories, recommendations, ...props }) => {
                         </div>
                     </div>
 
-                    {/* Links */}
-                    <div className="w-full md:w-2/3 lg:w-3/4 flex flex-wrap justify-between">
-
-
-
-
-                        {/* Support */}
-                        <div className="w-1/2 sm:w-1/3 lg:w-1/4">
-                            <div className="font-bold mb-2">Support</div>
-                            <div className="space-y-1 flex flex-col">
-                                <Link to="/orders" className="hover:underline hover:text-teal-700">Orders</Link>
-                                <Link to="/profile" className="hover:underline hover:text-teal-700">Profile</Link>
-                                <Link to="/faq" className="hover:underline hover:text-teal-700">FAQ</Link>
-                                <Link to="/contact" className="hover:underline hover:text-teal-700">Contact us</Link>
-                            </div>
-                        </div>
-
-                        {/* Follow us */}
-                        <div className="w-1/2 sm:w-1/3 lg:w-1/4 mt-6 sm:mt-0">
-                            <div className="font-bold mb-2">Follow us</div>
-                            <div className="space-y-1 flex flex-col">
-                                <a href={settingData.facebook} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Facebook</a>
-                                <a href={settingData.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Twitter</a>
-                                <a href={settingData.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Instagram</a>
-                            </div>
+                    {/* Support Links */}
+                    <div className="w-full md:w-1/3 mb-6 md:mb-0">
+                        <div className="font-bold mb-2 text-gray-900">Support</div>
+                        <div className="space-y-1 flex flex-col text-gray-700">
+                            <Link to="/orders" className="hover:underline hover:text-teal-700">Orders</Link>
+                            <Link to="/profile" className="hover:underline hover:text-teal-700">Profile</Link>
+                            <Link to="/faqs" className="hover:underline hover:text-teal-700">FAQ</Link>
+                            <Link to="/contact" className="hover:underline hover:text-teal-700">Contact us</Link>
                         </div>
                     </div>
+
+                    {/* Follow Us Links */}
+                    <div className="w-full md:w-1/3 mb-6 md:mb-0">
+                        <div className="font-bold mb-2 text-gray-900">Follow us</div>
+                        <div className="space-y-1 flex flex-col text-gray-700">
+                            <a href={settingData.facebook} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Facebook</a>
+                            <a href={settingData.twitter} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Twitter</a>
+                            <a href={settingData.instagram} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-teal-700">Instagram</a>
+                        </div>
+                    </div>
+
+
                 </div>
-                <div className="font-bold mt-8 pt-8 border-t border-gray-400 text-center text-xs">
+                <div className="font-bold mt-8 pt-8 border-t border-gray-400 text-center text-xs text-gray-700">
                     All Rights Reserved. Copyright ©️ {new Date().getFullYear()}
                 </div>
             </div>

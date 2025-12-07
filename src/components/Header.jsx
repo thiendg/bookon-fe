@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth.hook";
-import { useViewMode } from "@/context/ViewModeContext"; // New Import
+import { useViewMode } from "@/context/ViewModeContext";
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { ArrowRightOnRectangleIcon, Cog6ToothIcon, ShieldCheckIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -10,13 +10,14 @@ const pageClass = (currentPage, pageKey) => {
     return "cursor-pointer hover:bg-[#399d78] hover:text-teal-50! rounded-4xl py-2 px-4 text-teal-700! no-underline!";
 }
 
-const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed component
+const CustomerHeader = ({ currentPage, settingData, ...props }) => {
     const { isAuthenticated, user, logout } = useAuth();
-    const { toggleViewMode, isAdmin } = useViewMode(); // Get toggleViewMode and isAdmin
+    const { toggleViewMode, isAdmin } = useViewMode();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
+    console.log(settingData)
 
     const handleLogout = async () => {
         await logout();
@@ -24,14 +25,13 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
         navigate('/login');
     };
 
-    const handleSwitchToAdminView = () => { // New function
+    const handleSwitchToAdminView = () => {
         if (isAdmin) {
-            toggleViewMode(); // Toggle the view mode to admin
-            navigate('/admin'); // Navigate to the admin dashboard
+            toggleViewMode();
+            navigate('/admin');
         }
     };
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -54,7 +54,8 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
             <nav className="flex items-center justify-between px-4 py-3 lg:px-10">
                 <div className="flex items-center">
                     <Link to="/" className="text-2xl font-bold flex items-center text-teal-900! gap-x-2 font-[Verdana,Geneva,sans-serif]">
-                        <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />                        <span className="hidden sm:inline">{settingData.siteName}</span>
+                        <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-8 md:w-8 h-auto object-contain" />
+                        <span className="hidden sm:inline">{settingData.siteName}</span>
                     </Link>
                 </div>
 
@@ -78,7 +79,7 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
                             <>
                                 <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 p-2 rounded-full bg-[#05EAC0] hover:bg-[#5fe1c9] focus:outline-none">
                                     <span className="font-semibold text-sm text-gray-700 hidden sm:block">{user?.full_name || 'User'}</span>
-                                    <img src={user?.avatar_url || '/user-avatar.png'} alt="User Avatar" className="h-8 w-8 rounded-full" />
+                                    <img src={user?.avatar_url ? `${import.meta.env.VITE_API_URL}/${user?.avatar_url}` : '/user-avatar.png'} alt="User Avatar" className="h-4 w-4 rounded-full" />
                                 </button>
 
                                 {dropdownOpen && (
@@ -87,7 +88,7 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed 
                                             Signed in as <br />
                                             <strong className="truncate">{user?.email}</strong>
                                         </div>
-                                        {isAdmin && ( // Only show if user is admin
+                                        {isAdmin && (
                                             <button onClick={handleSwitchToAdminView} className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-gray-100">
                                                 <ShieldCheckIcon className="h-5 w-5 mr-2" />
                                                 Switch to Admin View
