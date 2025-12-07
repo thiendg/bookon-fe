@@ -1,11 +1,13 @@
 // src/pages/admin/views/AdminPostCreate.jsx
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { postService } from '@/services/post.service';
 import { Helmet } from 'react-helmet-async';
-import { IconArrowLeft, IconUser } from '@tabler/icons-react';
+import { IconUser, IconLink } from '@tabler/icons-react';
+import AdminForm from '@/components/admin/AdminForm';
+import TextInput from '@/components/admin/TextInput';
+import SelectInput from '@/components/admin/SelectInput';
 
-// For user selection, will eventually use a select endpoint
 const DUMMY_USERS = [
     { value: 1, label: 'Admin User' },
     { value: 2, label: 'Test User' },
@@ -15,15 +17,18 @@ const AdminPostCreate = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
+        slug: '',
         content: '',
-        user_id: '', // User who creates the post
+        user_id: '',
     });
+
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+
         setFormData(prevData => ({
             ...prevData,
             [name]: value
@@ -36,7 +41,13 @@ const AdminPostCreate = () => {
         setError('');
         setSuccessMessage('');
 
-        if (!formData.title.trim() || !formData.content.trim() || !formData.user_id) {
+        // Validation
+        if (
+            !formData.title.trim() ||
+            !formData.slug.trim() ||
+            !formData.content.trim() ||
+            !formData.user_id
+        ) {
             setError('All fields are required.');
             setSubmitting(false);
             return;
@@ -44,14 +55,17 @@ const AdminPostCreate = () => {
 
         try {
             const response = await postService.createPost(formData);
+
             if (response.success) {
                 setSuccessMessage('Post created successfully!');
-                setFormData({ // Clear form
+                setFormData({
                     title: '',
+                    slug: '',
                     content: '',
                     user_id: '',
                 });
-                setTimeout(() => navigate('/admin/posts'), 1500); // Redirect after success
+
+                setTimeout(() => navigate('/admin/posts'), 1500);
             } else {
                 throw new Error(response.message || 'Failed to create post');
             }
@@ -67,6 +81,7 @@ const AdminPostCreate = () => {
             <Helmet>
                 <title>Create New Post | Admin - BookOn</title>
             </Helmet>
+
             <AdminForm
                 title="Create New Post"
                 backLink="/admin/posts"
@@ -85,6 +100,17 @@ const AdminPostCreate = () => {
                     placeholder="Enter post title"
                     required
                 />
+
+                <TextInput
+                    label="Slug"
+                    name="slug"
+                    value={formData.slug}
+                    onChange={handleChange}
+                    placeholder="custom-url-slug"
+                    required
+                    icon={IconLink}
+                />
+
                 <TextInput
                     label="Content"
                     name="content"
@@ -95,16 +121,14 @@ const AdminPostCreate = () => {
                     required
                     rows={8}
                 />
+
                 <SelectInput
                     label="Author"
                     name="user_id"
                     value={formData.user_id}
                     onChange={handleChange}
-                    options={DUMMY_USERS} // Replace with fetched user options
+                    options={DUMMY_USERS}
                     required
-                    // disabled={usersLoading || usersError} // Add these states later
-                    // loading={usersLoading}
-                    // error={usersError}
                     icon={IconUser}
                 />
             </AdminForm>
