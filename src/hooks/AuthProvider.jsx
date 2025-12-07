@@ -6,15 +6,11 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Check authentication on mount
+
     useEffect(() => {
         checkAuth();
     }, []);
 
-    /**
-     * Check if user is authenticated
-     * Tries session first, then persistent login cookie
-     */
     const checkAuth = async () => {
         try {
             const data = await authService.checkAuth();
@@ -36,17 +32,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    /**
-     * Register new user
-     */
     const register = async (userData) => {
         const data = await authService.register(userData);
         return data;
     };
 
-    /**
-     * Login user
-     */
     const login = async (email, password, rememberMe = false) => {
         const data = await authService.login(email, password, rememberMe);
 
@@ -57,39 +47,27 @@ export const AuthProvider = ({ children }) => {
         return data;
     };
 
-    /**
-     * Logout user
-     */
     const logout = async () => {
         try {
             await authService.logout();
             setUser(null);
         } catch (error) {
             console.error('Logout error:', error);
-            // Clear user even if API call fails
+
             setUser(null);
         }
     };
 
-    /**
-     * Verify email with token
-     */
     const verifyEmail = async (token) => {
         const data = await authService.verifyEmail(token);
         return data;
     };
 
-    /**
-     * Request password reset
-     */
     const forgotPassword = async (email) => {
         const data = await authService.forgotPassword(email);
         return data;
     };
 
-    /**
-     * Reset password with token
-     */
     const resetPassword = async (token, password) => {
         const data = await authService.resetPassword(token, password);
         return data;
@@ -110,7 +88,7 @@ export const AuthProvider = ({ children }) => {
         verifyEmail,
         forgotPassword,
         resetPassword,
-        refreshAuth: checkAuth // Manually trigger auth check if needed
+        refreshAuth: checkAuth
     };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

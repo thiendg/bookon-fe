@@ -90,8 +90,8 @@ const BookList = () => {
         const fetchCategories = async () => {
             try {
                 const response = await categoryService.getAllCategories();
-                if (response && response.success && Array.isArray(response.data?.data)) {
-                    setCategories(response.data.data);
+                if (response && response.success && Array.isArray(response.data)) {
+                    setCategories(response.data);
                 } else {
                     console.error('Failed to fetch categories:', response);
                 }
