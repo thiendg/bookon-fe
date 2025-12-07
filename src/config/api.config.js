@@ -1,6 +1,6 @@
 // src/config/api.config.js
 export const API_CONFIG = {
-    BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost/bookon/bookon-be/',
+    BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost/bookon-be/',
     TIMEOUT: 10000,
     ENDPOINTS: {
         // Auth endpoints - matching backend structure
