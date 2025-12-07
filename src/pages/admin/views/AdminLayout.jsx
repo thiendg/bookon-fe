@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth.hook';
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 const AdminLayout = () => {
-  const [logoUrl, setLogoUrl] = useState('/bookon-logo.png');
+  const [company_logo_url, setcompany_logo_url] = useState('/bookon-logo.png');
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ const AdminLayout = () => {
           const items = resp.data.posts || resp.data || [];
           const map = {};
           items.forEach(it => { if (it && it.setting_key) map[it.setting_key] = it.setting_value; });
-          if (map.company_logo_url) setLogoUrl(`${import.meta.env.VITE_API_URL}${map.company_logo_url}`);
+          if (map.company_logo_url) setcompany_logo_url(`${import.meta.env.VITE_API_URL}${map.company_logo_url}`);
         }
       } catch (err) {
         // ignore and keep default logo
@@ -47,7 +47,7 @@ const AdminLayout = () => {
           <div className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
             <Link to="/admin" aria-label="BookOn Admin">
               <img
-                src={logoUrl}
+                src={company_logo_url}
                 width="110"
                 height="32"
                 alt="BookOn"

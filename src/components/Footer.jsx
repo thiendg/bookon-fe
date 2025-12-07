@@ -10,7 +10,7 @@ const BaseFooter = ({ settingData, categories, recommendations, ...props }) => {
                     <div className="w-full md:w-1/3 lg:w-1/4 mb-6 md:mb-0">
                         <div className="flex justify-center md:justify-start items-center mb-4">
                             <Link to="/" className="text-2xl font-bold flex items-center text-black gap-x-2 no-underline!">
-                                <img src={settingData.logoUrl || '/bookon-logo.png'} className="max-w-24 md:max-w-30" />
+                                <img src={settingData.company_logo_url || '/bookon-logo.png'} className="w-16 md:w-16" />
                                 {settingData.siteName}
                             </Link>
                         </div>
