@@ -1,6 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/AuthProvider';
+import { CartProvider } from '@/hooks/useCart';
+import { SettingsProvider } from './context/SettingsProvider'; // New Import
+import { ViewModeProvider } from './context/ViewModeContext'; // New Import
+import MainContent from './components/MainContent'; // New Import
+
 
 // Auth Views
 import ForgotPassword from './pages/auth/views/ForgotPassword';
@@ -12,7 +17,7 @@ import VerifyEmail from './pages/auth/views/VerifyEmail';
 import Dashboard from "./pages/home/views/Dashboard";
 
 // Home/Public Views
-import HomePage from './pages/home/views/HomePage';
+// import HomePage from './pages/home/views/HomePage'; // No longer directly imported here
 // import BookDetailsPage from './pages/home/views/BookDetailsPage';
 import CategoryList from './pages/home/views/CategoryList';
 import CategoryBooks from './pages/home/views/CategoryBooks';
@@ -66,123 +71,129 @@ import FaqPage from './pages/home/views/FaqPage'; // Import FaqPage
 import PostListPage from './pages/home/views/PostListPage';
 import PostDetailPage from './pages/home/views/PostDetailPage';
 
-import { CartProvider } from '@/hooks/useCart';
+
 import StoreBookList from './pages/store/views/BookList';
 import StoreBookDetail from './pages/store/views/BookDetail';
 import StoreCartPage from './pages/store/views/CartPage';
-import AdminBooks from './pages/admin/views/AdminBooks';
-import AdminOrders from './pages/admin/views/AdminOrders';
+// import AdminBooks from './pages/admin/views/AdminBooks'; // Not used
+// import AdminOrders from './pages/admin/views/AdminOrders'; // Not used
 
 
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <CartProvider>
-          <div className="App">
-            <Routes>
-              {/* Root / Public routes */}
-              <Route path="/" element={<StoreBookList />} />
-              <Route path="/books" element={<StoreBookList />} />
-              <Route path="/books/:id" element={<StoreBookDetail />} />
-              <Route path="/cart" element={<StoreCartPage />} />
-              <Route path="/posts" element={<PostListPage />} />
-              <Route path="/posts/:id" element={<PostDetailPage />} />
-              <Route path="/categories" element={<CategoryList />} />
-              <Route path="/categories/:categoryId" element={<CategoryBooks />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/faqs" element={<FaqPage />} />
+      <SettingsProvider>
+        <AuthProvider>
+          <CartProvider>
+            <ViewModeProvider>
+              <MainContent>
+                <div className="App">
+                  <Routes>
+                    {/* Root / Public routes */}
+                    <Route path="/" element={<StoreBookList />} />
+                    <Route path="/books" element={<StoreBookList />} />
+                    <Route path="/books/:id" element={<StoreBookDetail />} />
+                    <Route path="/cart" element={<StoreCartPage />} />
+                    <Route path="/posts" element={<PostListPage />} />
+                    <Route path="/posts/:id" element={<PostDetailPage />} />
+                    <Route path="/categories" element={<CategoryList />} />
+                    <Route path="/categories/:categoryId" element={<CategoryBooks />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/faqs" element={<FaqPage />} />
 
-              {/* Auth routes */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
+                    {/* Auth routes */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
 
-              {/* Protected / User routes */}
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
+                    {/* Protected / User routes */}
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
 
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfilePage />
-                  </ProtectedRoute>
-                }
-              >
-                <Route path="orders" element={<OrderList />} />
-                <Route path="orders/:orderId" element={<OrderDetailsPage />} />
-                <Route path="reviews" element={<ReviewsPage />} />
-              </Route>
+                    <Route
+                      path="/profile"
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      }
+                    >
+                      <Route path="orders" element={<OrderList />} />
+                      <Route path="orders/:orderId" element={<OrderDetailsPage />} />
+                      <Route path="reviews" element={<ReviewsPage />} />
+                    </Route>
 
-              {/* Admin routes (nested under /admin) */}
-              <Route
-                path="/admin"
-                element={
-                  <AdminRoute>
-                    <AdminLayout />
-                  </AdminRoute>
-                }
-              >
-                <Route index element={<AdminDashboardPage />} />
-                <Route path="users" element={<UserList />} />
-                <Route path="users/create" element={<UserCreate />} />
-                <Route path="users/:id" element={<UserDetail />} />
+                    {/* Admin routes (nested under /admin) */}
+                    <Route
+                      path="/admin"
+                      element={
+                        <AdminRoute>
+                          <AdminLayout />
+                        </AdminRoute>
+                      }
+                    >
+                      <Route index element={<AdminDashboardPage />} />
+                      <Route path="users" element={<UserList />} />
+                      <Route path="users/create" element={<UserCreate />} />
+                      <Route path="users/:id" element={<UserDetail />} />
 
-                <Route path="books" element={<BookList />} />
-                <Route path="books/create" element={<BookCreate />} />
-                <Route path="books/:id" element={<BookDetail />} />
+                      <Route path="books" element={<BookList />} />
+                      <Route path="books/create" element={<BookCreate />} />
+                      <Route path="books/:id" element={<BookDetail />} />
 
-                <Route path="roles" element={<RoleList />} />
-                <Route path="roles/create" element={<RoleCreate />} />
-                <Route path="roles/:id" element={<RoleDetail />} />
+                      <Route path="roles" element={<RoleList />} />
+                      <Route path="roles/create" element={<RoleCreate />} />
+                      <Route path="roles/:id" element={<RoleDetail />} />
 
-                <Route path="categories" element={<AdminCategoryList />} />
-                <Route path="categories/create" element={<AdminCategoryCreate />} />
-                <Route path="categories/:id" element={<AdminCategoryDetail />} />
+                      <Route path="categories" element={<AdminCategoryList />} />
+                      <Route path="categories/create" element={<AdminCategoryCreate />} />
+                      <Route path="categories/:id" element={<AdminCategoryDetail />} />
 
-                <Route path="orders" element={<AdminOrderList />} />
-                <Route path="orders/:id" element={<AdminOrderDetail />} />
+                      <Route path="orders" element={<AdminOrderList />} />
+                      <Route path="orders/:id" element={<AdminOrderDetail />} />
 
-                <Route path="reviews" element={<AdminReviewList />} />
-                <Route path="reviews/:id" element={<AdminReviewDetail />} />
+                      <Route path="reviews" element={<AdminReviewList />} />
+                      <Route path="reviews/:id" element={<AdminReviewDetail />} />
 
-                <Route path="posts" element={<AdminPostList />} />
-                <Route path="posts/create" element={<AdminPostCreate />} />
-                <Route path="posts/:id" element={<AdminPostDetail />} />
+                      <Route path="posts" element={<AdminPostList />} />
+                      <Route path="posts/create" element={<AdminPostCreate />} />
+                      <Route path="posts/:id" element={<AdminPostDetail />} />
 
-                <Route path="post-comments" element={<AdminPostCommentList />} />
-                <Route path="post-comments/:id" element={<AdminPostCommentDetail />} />
+                      <Route path="post-comments" element={<AdminPostCommentList />} />
+                      <Route path="post-comments/:id" element={<AdminPostCommentDetail />} />
 
-                <Route path="settings" element={<AdminSettingDetail />} />
-                <Route path="contacts" element={<AdminContactList />} />
-                <Route path="contacts/:id" element={<AdminContactDetail />} />
-                <Route path="faqs" element={<AdminFaqList />} />
-                <Route path="faqs/create" element={<AdminFaqCreate />} />
-                <Route path="faqs/:id" element={<AdminFaqDetail />} />
+                      <Route path="settings" element={<AdminSettingDetail />} />
+                      <Route path="contacts" element={<AdminContactList />} />
+                      <Route path="contacts/:id" element={<AdminContactDetail />} />
+                      <Route path="faqs" element={<AdminFaqList />} />
+                      <Route path="faqs/create" element={<AdminFaqCreate />} />
+                      <Route path="faqs/:id" element={<AdminFaqDetail />} />
 
-                <Route path="files" element={<FilesList />} />
-                <Route path="order-items" element={<OrderItemsList />} />
-                <Route path="order-reviews" element={<OrderReviewsList />} />
-                <Route path="sessions" element={<SessionsList />} />
-                <Route path="transactions" element={<TransactionsList />} />
-                <Route path="user-tokens" element={<UserTokensList />} />
-              </Route>
+                      <Route path="files" element={<FilesList />} />
+                      <Route path="order-items" element={<OrderItemsList />} />
+                      <Route path="order-reviews" element={<OrderReviewsList />} />
+                      <Route path="sessions" element={<SessionsList />} />
+                      <Route path="transactions" element={<TransactionsList />} />
+                      <Route path="user-tokens" element={<UserTokensList />} />
+                    </Route>
 
-              {/* Fallback 404 */}
-              <Route path="*" element={<div>404 - Page Not Found</div>} />
-            </Routes>
-          </div>
-        </CartProvider>
-      </AuthProvider>
+                    {/* Fallback 404 */}
+                    <Route path="*" element={<div>404 - Page Not Found</div>} />
+                  </Routes>
+                </div>
+              </MainContent>
+            </ViewModeProvider>
+          </CartProvider>
+        </AuthProvider>
+      </SettingsProvider>
     </Router>
   );
 }

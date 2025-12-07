@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/useAuth.hook";
+import { useViewMode } from "@/context/ViewModeContext"; // New Import
 import { Link, useNavigate } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import { ArrowRightOnRectangleIcon, Cog6ToothIcon, ShieldCheckIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -9,8 +10,9 @@ const pageClass = (currentPage, pageKey) => {
     return "cursor-pointer hover:bg-[#399d78] hover:text-teal-50! rounded-4xl py-2 px-4 text-teal-700! no-underline!";
 }
 
-const BaseHeader = ({ currentPage, settingData, ...props }) => {
-    const { isAuthenticated, user, logout, isAdmin } = useAuth();
+const CustomerHeader = ({ currentPage, settingData, ...props }) => { // Renamed component
+    const { isAuthenticated, user, logout } = useAuth();
+    const { toggleViewMode, isAdmin } = useViewMode(); // Get toggleViewMode and isAdmin
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const navigate = useNavigate();
@@ -20,6 +22,13 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
         await logout();
         setDropdownOpen(false);
         navigate('/login');
+    };
+
+    const handleSwitchToAdminView = () => { // New function
+        if (isAdmin) {
+            toggleViewMode(); // Toggle the view mode to admin
+            navigate('/admin'); // Navigate to the admin dashboard
+        }
     };
 
     // Close dropdown when clicking outside
@@ -80,11 +89,11 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
                                             Signed in as <br />
                                             <strong className="truncate">{user?.email}</strong>
                                         </div>
-                                        {isAdmin && (
-                                            <Link to="/admin" className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-indigo-600 hover:bg-gray-100">
+                                        {isAdmin && ( // Only show if user is admin
+                                            <button onClick={handleSwitchToAdminView} className="flex items-center w-full text-left px-4 py-2 text-sm font-semibold text-blue-600 hover:bg-gray-100">
                                                 <ShieldCheckIcon className="h-5 w-5 mr-2" />
-                                                Admin
-                                            </Link>
+                                                Switch to Admin View
+                                            </button>
                                         )}
                                         <Link to="/profile" className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                             <Cog6ToothIcon className="h-5 w-5 mr-2" />
@@ -145,4 +154,4 @@ const BaseHeader = ({ currentPage, settingData, ...props }) => {
     );
 }
 
-export default BaseHeader;
+export default CustomerHeader;

@@ -4,10 +4,14 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth.hook';
 
 const AdminRoute = ({ children }) => {
-    const { isAuthenticated, user, loading } = useAuth(); // Get user object directly
+    const { isAuthenticated, user, loading } = useAuth();
     const location = useLocation();
 
+    console.log('AdminRoute: Rendered');
+    console.log('AdminRoute: isAuthenticated', isAuthenticated, 'user', user, 'loading', loading, 'pathname', location.pathname);
+
     if (loading) {
+        console.log('AdminRoute: Still loading auth state...');
         return (
             <div className="flex items-center justify-center h-screen bg-gray-50">
                 <div className="flex flex-col items-center">
@@ -22,16 +26,20 @@ const AdminRoute = ({ children }) => {
     }
 
     if (!isAuthenticated) {
-        // Redirect non-logged-in users to the login page
+        console.log('AdminRoute: Not authenticated, redirecting to /login');
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     // Check if user is an admin using role_id
-    if (!user || user.role_id !== 1) { // Assuming role_id 1 is Admin
-        // Redirect non-admin users to the home page
+    const isAdmin = user && user.role_id === 1;
+    console.log('AdminRoute: User is admin?', isAdmin, 'user.role_id', user?.role_id);
+
+    if (!isAdmin) {
+        console.log('AdminRoute: Not an admin, redirecting to /');
         return <Navigate to="/" replace />;
     }
 
+    console.log('AdminRoute: User is authenticated and admin, rendering children.');
     return children;
 };
 

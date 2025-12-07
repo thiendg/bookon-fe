@@ -1,44 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react'; // Removed useState and useEffect
 import { Outlet, Link } from 'react-router-dom';
-import BaseHeader from '@/components/Header';
-import { settingService } from '@/services/setting.service';
+import { useSettings } from '@/context/SettingsContext'; // Import useSettings
 
 const AdminLayout = () => {
-  const [settingsData, setSettingsData] = useState({
-    company_logo_url: '/bookon-logo.png',
-    siteName: 'BookOn',
-  });
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const resp = await settingService.getAllSettings();
-        if (resp && resp.success) {
-          const items = resp.data.posts || resp.data || [];
-          const map = {};
-          items.forEach(it => { if (it && it.setting_key) map[it.setting_key] = it.setting_value; });
-
-          const built = {
-            siteName: map.company_name || 'BookOn',
-            company_logo_url: map.company_logo_url ? `${import.meta.env.VITE_API_URL}${map.company_logo_url}` : '/bookon-logo.png',
-            address: map.company_address || '',
-            phone: map.company_phone || '',
-            email: map.company_email || '',
-            adBanner: map.ad_banner || '',
-            googleMapsIframe: map.google_maps_iframe || '',
-          };
-          setSettingsData(built);
-        }
-      } catch (err) {
-        // ignore and keep defaults
-      }
-    };
-    loadSettings();
-  }, []);
+  const settingsData = useSettings(); // Consume settings from context
 
   return (
     <div className="page">
-      <BaseHeader currentPage="admin" settingData={settingsData} />
+      {/* BaseHeader is now handled by MainContent component */}
+      {/* Removed: <BaseHeader currentPage="admin" settingData={settingsData} /> */}
 
       <div className="page-wrapper">
         <Outlet />
@@ -69,7 +39,7 @@ const AdminLayout = () => {
                   <li className="list-inline-item">
                     Copyright &copy; 2025
                     <Link to="/admin" className="link-secondary">
-                      BookOn Admin
+                      {settingsData?.siteName || 'BookOn Admin'}
                     </Link>
                     . All rights reserved.
                   </li>
