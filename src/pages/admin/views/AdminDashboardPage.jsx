@@ -62,7 +62,6 @@ const AdminDashboardPage = () => {
             const tb = topBooksResponse?.data;
             const normalizedTopBooks = Array.isArray(tb) ? tb : (tb?.data || []);
             setTopBooks(normalizedTopBooks);
-            console.log('Top Books:', normalizedTopBooks);
 
         } catch (err) {
             setError(err.message || 'Failed to load dashboard data');

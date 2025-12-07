@@ -199,5 +199,3 @@ function App() {
 }
 
 export default App;
-
-// {"faqs": ["create", "read", "update", "delete"], "books": ["create", "read", "update", "delete"], "files": ["upload"], "posts": ["create", "read", "update", "delete"], "roles": ["create", "read", "update", "delete"], "users": ["create", "read", "update", "delete", "ban"], "orders": ["read", "create", "update", "delete"], "tokens": ["read", "create", "delete"], "reviews": ["read", "update", "delete"], "sessions": ["read", "delete"], "settings": ["update"], "categories": ["create", "read", "update", "delete"], "transactions": ["create", "read", "update", "delete"], "post_comments": ["create", "read_own", "update_own", "delete_own"]}
