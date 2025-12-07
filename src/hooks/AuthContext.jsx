@@ -1,4 +1,3 @@
-// src/hooks/AuthContext.jsx
 import { createContext } from 'react';
 
 const AuthContext = createContext(null);

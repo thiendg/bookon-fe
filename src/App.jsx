@@ -2,9 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/hooks/AuthProvider';
 import { CartProvider } from '@/hooks/useCart';
-import { SettingsProvider } from './context/SettingsProvider'; // New Import
-import { ViewModeProvider } from './context/ViewModeContext'; // New Import
-import MainContent from './components/MainContent'; // New Import
+import { SettingsProvider } from './context/SettingsProvider';
+import { ViewModeProvider } from './context/ViewModeContext';
+import MainContent from './components/MainContent';
 
 
 // Auth Views
@@ -17,15 +17,12 @@ import VerifyEmail from './pages/auth/views/VerifyEmail';
 import Dashboard from "./pages/home/views/Dashboard";
 
 // Home/Public Views
-// import HomePage from './pages/home/views/HomePage'; // No longer directly imported here
-// import BookDetailsPage from './pages/home/views/BookDetailsPage';
 import CategoryList from './pages/home/views/CategoryList';
 import CategoryBooks from './pages/home/views/CategoryBooks';
-// import CartPage from './pages/home/views/CartPage'; // Assuming this is also a public route for now
-import ProfilePage from './pages/home/views/ProfilePage'; // For authenticated user profile
-import OrderList from './pages/home/views/OrderList'; // Import OrderList
-import OrderDetailsPage from './pages/home/views/OrderDetailsPage'; // Import OrderDetailsPage
-import ReviewsPage from './pages/home/views/ReviewsPage'; // Import ReviewsPage
+import ProfilePage from './pages/home/views/ProfilePage';
+import OrderList from './pages/home/views/OrderList';
+import OrderDetailsPage from './pages/home/views/OrderDetailsPage';
+import ReviewsPage from './pages/home/views/ReviewsPage';
 
 // Admin Views
 import AdminLayout from './pages/admin/views/AdminLayout';
@@ -36,27 +33,27 @@ import UserDetail from './pages/admin/views/UserDetail';
 import BookList from './pages/admin/views/BookList';
 import BookCreate from './pages/admin/views/BookCreate';
 import BookDetail from './pages/admin/views/BookDetail';
-import RoleList from './pages/admin/views/RoleList'; // Import RoleList
-import RoleCreate from './pages/admin/views/RoleCreate'; // Import RoleCreate
-import RoleDetail from './pages/admin/views/RoleDetail'; // Import RoleDetail
-import AdminCategoryList from './pages/admin/views/AdminCategoryList'; // Import
-import AdminCategoryCreate from './pages/admin/views/AdminCategoryCreate'; // Import
-import AdminCategoryDetail from './pages/admin/views/AdminCategoryDetail'; // Import
-import AdminOrderList from './pages/admin/views/AdminOrderList'; // Import
-import AdminOrderDetail from './pages/admin/views/AdminOrderDetail'; // Import
-import AdminReviewList from './pages/admin/views/AdminReviewList'; // Import
-import AdminReviewDetail from './pages/admin/views/AdminReviewDetail'; // Import
-import AdminPostList from './pages/admin/views/AdminPostList'; // Import
-import AdminPostCreate from './pages/admin/views/AdminPostCreate'; // Import
-import AdminPostDetail from './pages/admin/views/AdminPostDetail'; // Import
-import AdminPostCommentList from './pages/admin/views/AdminPostCommentList'; // Import
-import AdminPostCommentDetail from './pages/admin/views/AdminPostCommentDetail'; // Import
-import AdminSettingDetail from './pages/admin/views/AdminSettingDetail'; // Import
-import AdminContactList from './pages/admin/views/AdminContactList'; // Import
-import AdminContactDetail from './pages/admin/views/AdminContactDetail'; // Import
-import AdminFaqList from './pages/admin/views/AdminFaqList'; // Import
-import AdminFaqCreate from './pages/admin/views/AdminFaqCreate'; // Import
-import AdminFaqDetail from './pages/admin/views/AdminFaqDetail'; // Import
+import RoleList from './pages/admin/views/RoleList';
+import RoleCreate from './pages/admin/views/RoleCreate';
+import RoleDetail from './pages/admin/views/RoleDetail';
+import AdminCategoryList from './pages/admin/views/AdminCategoryList';
+import AdminCategoryCreate from './pages/admin/views/AdminCategoryCreate';
+import AdminCategoryDetail from './pages/admin/views/AdminCategoryDetail';
+import AdminOrderList from './pages/admin/views/AdminOrderList';
+import AdminOrderDetail from './pages/admin/views/AdminOrderDetail';
+import AdminReviewList from './pages/admin/views/AdminReviewList';
+import AdminReviewDetail from './pages/admin/views/AdminReviewDetail';
+import AdminPostList from './pages/admin/views/AdminPostList';
+import AdminPostCreate from './pages/admin/views/AdminPostCreate';
+import AdminPostDetail from './pages/admin/views/AdminPostDetail';
+import AdminPostCommentList from './pages/admin/views/AdminPostCommentList';
+import AdminPostCommentDetail from './pages/admin/views/AdminPostCommentDetail';
+import AdminSettingDetail from './pages/admin/views/AdminSettingDetail';
+import AdminContactList from './pages/admin/views/AdminContactList';
+import AdminContactDetail from './pages/admin/views/AdminContactDetail';
+import AdminFaqList from './pages/admin/views/AdminFaqList';
+import AdminFaqCreate from './pages/admin/views/AdminFaqCreate';
+import AdminFaqDetail from './pages/admin/views/AdminFaqDetail';
 import FilesList from './pages/admin/views/FilesList';
 import OrderItemsList from './pages/admin/views/OrderItemsList';
 import OrderReviewsList from './pages/admin/views/OrderReviewsList';
@@ -67,16 +64,12 @@ import AdminDashboardPage from './pages/admin/views/AdminDashboardPage';
 
 // Home/Public Views - additional
 import ContactPage from './pages/home/views/ContactPage';
-import FaqPage from './pages/home/views/FaqPage'; // Import FaqPage
+import FaqPage from './pages/home/views/FaqPage'; FaqPage
 import PostListPage from './pages/home/views/PostListPage';
 import PostDetailPage from './pages/home/views/PostDetailPage';
-
-
 import StoreBookList from './pages/store/views/BookList';
 import StoreBookDetail from './pages/store/views/BookDetail';
 import StoreCartPage from './pages/store/views/CartPage';
-// import AdminBooks from './pages/admin/views/AdminBooks'; // Not used
-// import AdminOrders from './pages/admin/views/AdminOrders'; // Not used
 
 
 function App() {
