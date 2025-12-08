@@ -6,18 +6,26 @@ import { Helmet } from 'react-helmet-async';
 import { IconQuestionMark } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const FaqPage = () => {
     const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [openIndex, setOpenIndex] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 500);
+    const frequents = ['Đặt hàng', 'Vận chuyển', 'Phí', 'Đơn hàng']; // Fetch later from data analyzing process
 
     const fetchFaqs = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const response = await faqService.getFaqs({ limit: 100 }); // Fetch all or a large number
+            const params = {
+                limit: 100,
+                ...(debouncedSearchTerm && { search: debouncedSearchTerm })
+            };
+            const response = await faqService.getFaqs(params); // Fetch all or a large number
             if (response.success) {
                 // Backend returns 'faqs', 'total', 'page', 'limit'
                 setFaqs(response.data.faqs || []);
@@ -30,7 +38,7 @@ const FaqPage = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [debouncedSearchTerm]);
 
     useEffect(() => {
         fetchFaqs();
@@ -103,8 +111,35 @@ const FaqPage = () => {
                 <meta name="description" content="Find answers to common questions about BookOn." />
             </Helmet>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h1 className="text-3xl font-extrabold text-gray-900 mb-6 text-center">NHỮNG CÂU HỎI THƯỜNG GẶP</h1>
+                <div className='flex items-center justify-between overflow-auto font-bold w-2/3 mb-2'>
+                    <h1 className="text-[20px]! text-[#006E54]! mx-3 mb-0">Frequently Asked</h1>
+                    {frequents.map((f) => (
+                        <span
+                            key={f}
+                            onClick={() => setSearchTerm(f)}
+                            className='hover:underline cursor-pointer whitespace-nowrap'
+                        >{f}</span>
+                    ))}
+                </div>
+                <div className='bg-white rounded-full border border-[#006E54]! px-3 py-2 mb-2 flex justify-between'>
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        placeholder='Find your issue here...'
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className='w-full focus:outline-none'
+                    />
+                    {searchTerm && <span
+                        className="text-sm cursor-pointer font-bold text-[#006E54]"
+                        onClick={() => setSearchTerm('')}
+                    >
+                        Clear
+                    </span>}
+                </div>
                 {FAQBlock}
+                <div className='m-2'>
+                    Cannot find your problem? <a className='text-[#006E54]! font-bold cursor-pointer' href='./contact'>Ask now</a>
+                </div>
             </div>
         </BasePage>
     );
