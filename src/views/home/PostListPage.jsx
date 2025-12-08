@@ -5,19 +5,7 @@ import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { IconSearch, IconChevronLeft, IconChevronRight, IconNews } from '@tabler/icons-react';
-
-const useDebounce = (value, delay) => {
-    const [debouncedValue, setDebouncedValue] = useState(value);
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedValue(value);
-        }, delay);
-        return () => {
-            clearTimeout(handler);
-        };
-    }, [value, delay]);
-    return debouncedValue;
-};
+import { useDebounce } from '@/hooks/useDebounce';
 
 const PostListPage = () => {
     const [posts, setPosts] = useState([]);
