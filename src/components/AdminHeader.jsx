@@ -77,12 +77,12 @@ const AdminHeader = ({ currentPage, settingData, ...props }) => {
 
                 {/* Admin Navigation Links */}
                 <div className="hidden lg:flex lg:gap-x-12 lg:justify-center lg:items-center lg:font-semibold lg:text-shadow-2xs">
-                    <Link className={pageClass(currentPage, "dashboard")} to="/admin">Dashboard</Link>
-                    <Link className={pageClass(currentPage, "users")} to="/admin/users">Users</Link>
-                    <Link className={pageClass(currentPage, "books")} to="/admin/books">Books</Link>
-                    <Link className={pageClass(currentPage, "categories")} to="/admin/categories">Categories</Link>
-                    <Link className={pageClass(currentPage, "orders")} to="/admin/orders">Orders</Link>
-                    <Link className={pageClass(currentPage, "posts")} to="/admin/posts">Posts</Link>
+                    <Link className={pageClass(currentPage, "/dashboard")} to="/admin">Dashboard</Link>
+                    <Link className={pageClass(currentPage, "/users")} to="/admin/users">Users</Link>
+                    <Link className={pageClass(currentPage, "/books")} to="/admin/books">Books</Link>
+                    <Link className={pageClass(currentPage, "/categories")} to="/admin/categories">Categories</Link>
+                    <Link className={pageClass(currentPage, "/orders")} to="/admin/orders">Orders</Link>
+                    <Link className={pageClass(currentPage, "/posts")} to="/admin/posts">Posts</Link>
                     {/* Add more admin links as needed */}
                 </div>
 

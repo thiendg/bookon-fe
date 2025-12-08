@@ -8,69 +8,69 @@ import MainContent from './components/MainContent';
 
 
 // Auth Views
-import ForgotPassword from './pages/auth/views/ForgotPassword';
-import Login from './pages/auth/views/Login';
-import ProtectedRoute from './pages/auth/views/ProtectedRoute';
-import Register from './pages/auth/views/Register';
-import ResetPassword from './pages/auth/views/ResetPassword';
-import VerifyEmail from './pages/auth/views/VerifyEmail';
-import Dashboard from "./pages/home/views/Dashboard";
-import AboutPage from './pages/home/views/AboutPage'; // Import AboutPage
+import ForgotPassword from './views/auth/ForgotPassword';
+import Login from './views/auth/Login';
+import ProtectedRoute from './views/auth/ProtectedRoute';
+import Register from './views/auth/Register';
+import ResetPassword from './views/auth/ResetPassword';
+import VerifyEmail from './views/auth/VerifyEmail';
+import Dashboard from "./views/home/Dashboard";
+import AboutPage from './views/home/AboutPage'; // Import AboutPage
 
 // Home/Public Views
-import CategoryList from './pages/home/views/CategoryList';
-import CategoryBooks from './pages/home/views/CategoryBooks';
-import ProfilePage from './pages/home/views/ProfilePage';
-import OrderList from './pages/home/views/OrderList';
-import OrderDetailsPage from './pages/home/views/OrderDetailsPage';
-import ReviewsPage from './pages/home/views/ReviewsPage';
+import CategoryList from './views/home/CategoryList';
+import CategoryBooks from './views/home/CategoryBooks';
+import ProfilePage from './views/home/ProfilePage';
+import OrderList from './views/home/OrderList';
+import OrderDetailsPage from './views/home/OrderDetailsPage';
+import ReviewsPage from './views/home/ReviewsPage';
 
 // Admin Views
-import AdminLayout from './pages/admin/views/AdminLayout';
-import AdminRoute from './pages/auth/views/AdminRoute';
-import UserList from './pages/admin/views/UserList';
-import UserCreate from './pages/admin/views/UserCreate';
-import UserDetail from './pages/admin/views/UserDetail';
-import BookList from './pages/admin/views/BookList';
-import BookCreate from './pages/admin/views/BookCreate';
-import BookDetail from './pages/admin/views/BookDetail';
-import RoleList from './pages/admin/views/RoleList';
-import RoleCreate from './pages/admin/views/RoleCreate';
-import RoleDetail from './pages/admin/views/RoleDetail';
-import AdminCategoryList from './pages/admin/views/AdminCategoryList';
-import AdminCategoryCreate from './pages/admin/views/AdminCategoryCreate';
-import AdminCategoryDetail from './pages/admin/views/AdminCategoryDetail';
-import AdminOrderList from './pages/admin/views/AdminOrderList';
-import AdminOrderDetail from './pages/admin/views/AdminOrderDetail';
-import AdminReviewList from './pages/admin/views/AdminReviewList';
-import AdminReviewDetail from './pages/admin/views/AdminReviewDetail';
-import AdminPostList from './pages/admin/views/AdminPostList';
-import AdminPostCreate from './pages/admin/views/AdminPostCreate';
-import AdminPostDetail from './pages/admin/views/AdminPostDetail';
-import AdminPostCommentList from './pages/admin/views/AdminPostCommentList';
-import AdminPostCommentDetail from './pages/admin/views/AdminPostCommentDetail';
-import AdminSettingDetail from './pages/admin/views/AdminSettingDetail';
-import AdminContactList from './pages/admin/views/AdminContactList';
-import AdminContactDetail from './pages/admin/views/AdminContactDetail';
-import AdminFaqList from './pages/admin/views/AdminFaqList';
-import AdminFaqCreate from './pages/admin/views/AdminFaqCreate';
-import AdminFaqDetail from './pages/admin/views/AdminFaqDetail';
-import FilesList from './pages/admin/views/FilesList';
-import OrderItemsList from './pages/admin/views/OrderItemsList';
-import OrderReviewsList from './pages/admin/views/OrderReviewsList';
-import SessionsList from './pages/admin/views/SessionsList';
-import TransactionsList from './pages/admin/views/TransactionsList';
-import UserTokensList from './pages/admin/views/UserTokensList';
-import AdminDashboardPage from './pages/admin/views/AdminDashboardPage';
+import AdminLayout from './views/admin/AdminLayout';
+import AdminRoute from './views/auth/AdminRoute';
+import UserList from './views/admin/UserList';
+import UserCreate from './views/admin/UserCreate';
+import UserDetail from './views/admin/UserDetail';
+import BookList from './views/admin/BookList';
+import BookCreate from './views/admin/BookCreate';
+import BookDetail from './views/admin/BookDetail';
+import RoleList from './views/admin/RoleList';
+import RoleCreate from './views/admin/RoleCreate';
+import RoleDetail from './views/admin/RoleDetail';
+import AdminCategoryList from './views/admin/AdminCategoryList';
+import AdminCategoryCreate from './views/admin/AdminCategoryCreate';
+import AdminCategoryDetail from './views/admin/AdminCategoryDetail';
+import AdminOrderList from './views/admin/AdminOrderList';
+import AdminOrderDetail from './views/admin/AdminOrderDetail';
+import AdminReviewList from './views/admin/AdminReviewList';
+import AdminReviewDetail from './views/admin/AdminReviewDetail';
+import AdminPostList from './views/admin/AdminPostList';
+import AdminPostCreate from './views/admin/AdminPostCreate';
+import AdminPostDetail from './views/admin/AdminPostDetail';
+import AdminPostCommentList from './views/admin/AdminPostCommentList';
+import AdminPostCommentDetail from './views/admin/AdminPostCommentDetail';
+import AdminSettingDetail from './views/admin/AdminSettingDetail';
+import AdminContactList from './views/admin/AdminContactList';
+import AdminContactDetail from './views/admin/AdminContactDetail';
+import AdminFaqList from './views/admin/AdminFaqList';
+import AdminFaqCreate from './views/admin/AdminFaqCreate';
+import AdminFaqDetail from './views/admin/AdminFaqDetail';
+import FilesList from './views/admin/FilesList';
+import OrderItemsList from './views/admin/OrderItemsList';
+import OrderReviewsList from './views/admin/OrderReviewsList';
+import SessionsList from './views/admin/SessionsList';
+import TransactionsList from './views/admin/TransactionsList';
+import UserTokensList from './views/admin/UserTokensList';
+import AdminDashboardPage from './views/admin/AdminDashboardPage';
 
 // Home/Public Views - additional
-import ContactPage from './pages/home/views/ContactPage';
-import FaqPage from './pages/home/views/FaqPage'; FaqPage
-import PostListPage from './pages/home/views/PostListPage';
-import PostDetailPage from './pages/home/views/PostDetailPage';
-import StoreBookList from './pages/store/views/BookList';
-import StoreBookDetail from './pages/store/views/BookDetail';
-import StoreCartPage from './pages/store/views/CartPage';
+import ContactPage from './views/home/ContactPage';
+import FaqPage from './views/home/FaqPage'; FaqPage
+import PostListPage from './views/home/PostListPage';
+import PostDetailPage from './views/home/PostDetailPage';
+import StoreBookList from './views/store/BookList';
+import StoreBookDetail from './views/store/BookDetail';
+import StoreCartPage from './views/store/CartPage';
 
 
 function App() {
