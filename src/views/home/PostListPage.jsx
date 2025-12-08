@@ -29,7 +29,7 @@ const PostListPage = () => {
     const [totalItems, setTotalItems] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
     const debouncedSearchTerm = useDebounce(searchTerm, 500);
-    console.log(posts)
+
     const fetchPosts = useCallback(async () => {
         setLoading(true);
         setError('');

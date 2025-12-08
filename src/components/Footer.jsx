@@ -35,7 +35,7 @@ const BaseFooter = ({ settingData, ...props }) => {
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
                         <div className="font-bold mb-2 text-gray-900">Support</div>
                         <div className="space-y-1 flex flex-col text-gray-700">
-                            <Link to="/orders" className="hover:underline hover:text-teal-700">Orders</Link>
+                            <Link to="/profile/orders" className="hover:underline hover:text-teal-700">Orders</Link>
                             <Link to="/profile" className="hover:underline hover:text-teal-700">Profile</Link>
                             <Link to="/faqs" className="hover:underline hover:text-teal-700">FAQ</Link>
                             <Link to="/contact" className="hover:underline hover:text-teal-700">Contact us</Link>

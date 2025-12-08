@@ -78,18 +78,18 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => {
                 </div>
 
                 <div className="hidden lg:flex lg:gap-x-12 lg:justify-center lg:items-center lg:font-semibold lg:text-shadow-2xs">
-                    <Link className={pageClass(currentPage, "home")} to="/">Home</Link>
-                    <Link className={pageClass(currentPage, "posts")} to="/posts">Posts</Link>
-                    <Link className={pageClass(currentPage, "about")} to="/about">About</Link>
-                    <Link className={pageClass(currentPage, "faq")} to="/faqs">FAQ</Link>
+                    <Link className={pageClass(currentPage, "/home")} to="/">Home</Link>
+                    <Link className={pageClass(currentPage, "/posts")} to="/posts">Posts</Link>
+                    <Link className={pageClass(currentPage, "/about")} to="/about">About</Link>
+                    <Link className={pageClass(currentPage, "/faqs")} to="/faqs">FAQ</Link>
                 </div>
 
                 <div className="flex items-center gap-x-2">
                     <Link to="/contact" className={`${pageClass(currentPage, "contact")} hidden sm:block`}>
-                        <img src="/contact.png" className="max-w-8" />
+                        <img src="/contact.png" className="max-w-8 text-inherit!" />
                     </Link>
                     <Link to="/cart" className={pageClass(currentPage, "cart")}>
-                        <img src="/shopping-cart.png" className="max-w-8" />
+                        <img src="/shopping-cart.png" className="max-w-8 text-inherit!" />
                     </Link>
 
                     <div ref={dropdownRef} className="relative flex items-center gap-x-2 cursor-pointer">
