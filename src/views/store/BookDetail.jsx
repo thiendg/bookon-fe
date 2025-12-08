@@ -21,7 +21,7 @@ const BookDetail = () => {
         setLoading(true);
         setError("");
 
-        const res = await booksService.get(id);
+        const res = await booksService.getBookById(id);
         if (!res.success) {
           throw new Error(res.message || "Failed to load book information");
         }
@@ -33,7 +33,7 @@ const BookDetail = () => {
         console.error("Load book error:", err);
         setError(
           err.message ||
-            "An error occurred while loading book information. Please try again."
+          "An error occurred while loading book information. Please try again."
         );
       } finally {
         setLoading(false);
@@ -101,7 +101,7 @@ const BookDetail = () => {
               <div className="w-40 sm:w-48 md:w-56 bg-slate-50 rounded-3xl overflow-hidden shadow-inner">
                 <div className="w-full h-60 sm:h-72 md:h-80 overflow-hidden">
                   <img
-                    src={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null                    }
+                    src={book?.cover_image_url ? `${import.meta.env.VITE_API_URL}/${book.cover_image_url}` : null}
                     alt={book.title}
                     className="w-full h-full object-cover"
                   />
