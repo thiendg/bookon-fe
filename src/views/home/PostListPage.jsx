@@ -37,7 +37,8 @@ const PostListPage = () => {
                 throw new Error(response.message || 'Failed to fetch posts');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred while fetching posts.');
+            const backendMessage = err.response?.data?.message;
+            setError(backendMessage || err.message || 'An error occurred while fetching posts.');
             setPosts([]);
         } finally {
             setLoading(false);

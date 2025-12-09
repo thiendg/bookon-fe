@@ -2,7 +2,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { usersService } from '@/services/users.service';
 import { Helmet } from 'react-helmet-async';
-import { IconSearch, IconChevronLeft, IconChevronRight, IconEdit, IconTrash } from '@tabler/icons-react';
+import { IconSearch, IconChevronLeft, IconChevronRight, IconEdit, IconTrash, IconPlus } from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
 
 const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -37,7 +38,7 @@ const UserList = () => {
                 pageSize: pageSize,
                 // Assuming backend supports searching by 'search' param for users
                 // If not, this needs adjustment
-                ...(debouncedSearchTerm && { search: debouncedSearchTerm }) 
+                ...(debouncedSearchTerm && { search: debouncedSearchTerm })
             };
             const response = await usersService.getUsers(params);
             if (response.success) {
@@ -71,6 +72,26 @@ const UserList = () => {
         }
     };
 
+    const handleDelete = async (userId) => {
+        if (!window.confirm("Are you sure you want to delete this User?")) {
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await usersService.deleteUser(userId);
+            if (response.success) {
+                fetchUsers(); // Refresh the list
+            } else {
+                throw new Error(response.message || 'Failed to delete User');
+            }
+        } catch (err) {
+            setError(err.message || 'Error deleting User.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     return (
         <>
             <Helmet>
@@ -84,10 +105,10 @@ const UserList = () => {
                         </div>
                         <div className="col-auto ms-auto d-print-none">
                             <div className="btn-list">
-                                <a href="#" className="btn btn-primary d-none d-sm-inline-block">
-                                    <IconSearch className="icon" />
-                                    New User
-                                </a>
+                                <Link to="/admin/users/create" className="btn btn-primary d-none d-sm-inline-block">
+                                    <IconPlus className="icon" />
+                                    New Book
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -163,12 +184,12 @@ const UserList = () => {
                                                 </td>
                                                 <td>
                                                     <div className="btn-list flex-nowrap">
-                                                        <a href="#" className="btn btn-icon btn-sm btn-outline-primary" aria-label="Edit">
+                                                        <Link to={`/admin/users/${user.id}`} className="btn btn-icon btn-sm btn-outline-primary" aria-label="Edit">
                                                             <IconEdit />
-                                                        </a>
-                                                        <a href="#" className="btn btn-icon btn-sm btn-outline-danger" aria-label="Delete">
+                                                        </Link>
+                                                        <button onClick={() => handleDelete(user.id)} className="btn btn-icon btn-sm btn-outline-danger" aria-label="Delete">
                                                             <IconTrash />
-                                                        </a>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -201,7 +222,7 @@ const UserList = () => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };
