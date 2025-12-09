@@ -17,6 +17,8 @@ import {
     IconMessage,
     IconSettings,
 } from '@tabler/icons-react';
+import { IconFlagQuestion } from '@tabler/icons-react';
+import { IconUserCircle } from '@tabler/icons-react';
 
 const AdminDashboardPage = () => {
     const [stats, setStats] = useState({
@@ -382,6 +384,18 @@ const AdminDashboardPage = () => {
                                             <Link to="/admin/contacts" className="btn btn-white w-100">
                                                 <IconMessage className="icon mb-2" />
                                                 <div>Message</div>
+                                            </Link>
+                                        </div>
+                                        <div className="col-6 col-sm-4 col-md-2">
+                                            <Link to="/admin/faqs" className="btn btn-white w-100">
+                                                <IconFlagQuestion className="icon mb-2" />
+                                                <div>FAQ</div>
+                                            </Link>
+                                        </div>
+                                        <div className="col-6 col-sm-4 col-md-2">
+                                            <Link to="/admin/roles" className="btn btn-white w-100">
+                                                <IconUserCircle className="icon mb-2" />
+                                                <div>Roles</div>
                                             </Link>
                                         </div>
                                     </div>
