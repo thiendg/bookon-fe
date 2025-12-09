@@ -3,32 +3,31 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { postService } from '@/services/post.service';
 import { Helmet } from 'react-helmet-async';
-import {
-    IconUser,
-    IconEdit,
-    IconNews
-} from '@tabler/icons-react';
+import { IconNews, IconLink, IconFileText, IconTag, IconArticle, IconStatusChange, IconX } from '@tabler/icons-react';
 import AdminForm from '@/components/admin/AdminForm';
 import TextInput from '@/components/admin/TextInput';
 import SelectInput from '@/components/admin/SelectInput';
+import ImageUploadInput from '@/components/admin/ImageUploadInput';
 import AdminPostCommentsList from './AdminPostCommentList';
 
-// For user selection, will eventually use a select endpoint
-const DUMMY_USERS = [
-    { value: 1, label: 'Admin User' },
-    { value: 2, label: 'Test User' },
+const statusOptions = [
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' },
 ];
 
 const AdminPostDetail = () => {
     const { id } = useParams();
-    // eslint-disable-next-line no-unused-vars
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [formData, setFormData] = useState({
         title: '',
         content: '',
-        user_id: '',
+        slug: '',
+        status: 'draft',
+        meta_title: '',
+        meta_description: '',
     });
+    const [thumbnailFile, setThumbnailFile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -40,11 +39,15 @@ const AdminPostDetail = () => {
         try {
             const response = await postService.getPostById(id);
             if (response.success) {
-                setPost(response.data);
+                const postData = response.data;
+                setPost(postData);
                 setFormData({
-                    title: response.data.title,
-                    content: response.data.content,
-                    user_id: response.data.user_id,
+                    title: postData.title || '',
+                    content: postData.content || '',
+                    slug: postData.slug || '',
+                    status: postData.status || 'draft',
+                    meta_title: postData.meta_title || '',
+                    meta_description: postData.meta_description || '',
                 });
             } else {
                 throw new Error(response.message || 'Failed to fetch post details');
@@ -69,6 +72,14 @@ const AdminPostDetail = () => {
         }));
     };
 
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setThumbnailFile(e.target.files[0]);
+        } else {
+            setThumbnailFile(null);
+        }
+    };
+
     const handleUpdate = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -81,27 +92,23 @@ const AdminPostDetail = () => {
             return;
         }
 
-        if (!formData.title.trim() || !formData.content.trim() || !formData.user_id) {
-            setError('All fields are required.');
-            setSubmitting(false);
-            return;
-        }
-
         try {
-            const updateData = {
-                title: formData.title,
-                content: formData.content,
-                user_id: formData.user_id,
-            };
+            const updateData = { ...formData };
+            if (thumbnailFile) {
+                updateData.thumbnail_image = thumbnailFile;
+            }
+            
             const response = await postService.updatePost(id, updateData);
             if (response.success) {
                 setSuccessMessage('Post updated successfully!');
+                setThumbnailFile(null); // Clear file after successful upload
                 fetchPost(); // Refresh data to ensure consistency
             } else {
                 throw new Error(response.message || 'Failed to update post');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred during update.');
+            const backendMessage = err.response?.data?.message;
+            setError(backendMessage || err.message || 'An error occurred during update.');
         } finally {
             setSubmitting(false);
         }
@@ -164,7 +171,17 @@ const AdminPostDetail = () => {
                     onChange={handleChange}
                     placeholder="Enter post title"
                     required
+                    icon={IconArticle}
                 />
+                
+                <ImageUploadInput
+                    label="Thumbnail Image"
+                    name="thumbnail_image"
+                    onChange={handleFileChange}
+                    currentImageUrl={post?.thumbnail_image_url ? `${import.meta.env.VITE_API_URL}/${post.thumbnail_image_url}` : null}
+                    smallText="Upload a new image to replace the current one."
+                />
+
                 <TextInput
                     label="Content"
                     name="content"
@@ -173,26 +190,55 @@ const AdminPostDetail = () => {
                     onChange={handleChange}
                     placeholder="Enter post content"
                     required
-                    rows={8}
+                    rows={12}
                 />
-                <SelectInput
-                    label="Author"
-                    name="user_id"
-                    value={formData.user_id}
+
+                <hr className="my-4" />
+                <h3 className="card-title mb-3">SEO & Metadata</h3>
+
+                <TextInput
+                    label="Slug"
+                    name="slug"
+                    value={formData.slug}
                     onChange={handleChange}
-                    options={DUMMY_USERS} // Replace with fetched user options
+                    placeholder="custom-url-slug"
+                    icon={IconLink}
+                />
+
+                 <SelectInput
+                    label="Status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    options={statusOptions}
                     required
-                    // disabled={usersLoading || usersError} // Add these states later
-                    // loading={usersLoading}
-                    // error={usersError}
-                    icon={IconUser}
+                    icon={IconStatusChange}
+                />
+
+                <TextInput
+                    label="Meta Title"
+                    name="meta_title"
+                    value={formData.meta_title}
+                    onChange={handleChange}
+                    placeholder="Enter meta title for SEO"
+                    icon={IconFileText}
+                />
+
+                <TextInput
+                    label="Meta Description"
+                    name="meta_description"
+                    type="textarea"
+                    value={formData.meta_description}
+                    onChange={handleChange}
+                    placeholder="Enter meta description for SEO"
+                    rows={3}
+                    icon={IconTag}
                 />
             </AdminForm>
             <div className="mt-6">
-    <h2 className="mb-3">Comments</h2>
-    <AdminPostCommentsList postId={id} />
-</div>
-
+                <h2 className="mb-3">Comments</h2>
+                <AdminPostCommentsList postId={id} />
+            </div>
         </>
     );
 };

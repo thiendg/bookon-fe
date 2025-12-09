@@ -3,14 +3,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { postService } from '@/services/post.service';
 import { Helmet } from 'react-helmet-async';
-import { IconUser, IconLink } from '@tabler/icons-react';
+import { IconLink, IconFileText, IconTag, IconArticle, IconStatusChange } from '@tabler/icons-react';
 import AdminForm from '@/components/admin/AdminForm';
 import TextInput from '@/components/admin/TextInput';
 import SelectInput from '@/components/admin/SelectInput';
+import ImageUploadInput from '@/components/admin/ImageUploadInput';
 
-const DUMMY_USERS = [
-    { value: 1, label: 'Admin User' },
-    { value: 2, label: 'Test User' },
+const statusOptions = [
+    { value: 'draft', label: 'Draft' },
+    { value: 'published', label: 'Published' },
 ];
 
 const AdminPostCreate = () => {
@@ -19,8 +20,11 @@ const AdminPostCreate = () => {
         title: '',
         slug: '',
         content: '',
-        user_id: '',
+        status: 'draft',
+        meta_title: '',
+        meta_description: '',
     });
+    const [thumbnailFile, setThumbnailFile] = useState(null);
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -28,11 +32,18 @@ const AdminPostCreate = () => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-
         setFormData(prevData => ({
             ...prevData,
             [name]: value
         }));
+    };
+
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setThumbnailFile(e.target.files[0]);
+        } else {
+            setThumbnailFile(null);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -41,36 +52,33 @@ const AdminPostCreate = () => {
         setError('');
         setSuccessMessage('');
 
-        // Validation
-        if (
-            !formData.title.trim() ||
-            !formData.slug.trim() ||
-            !formData.content.trim() ||
-            !formData.user_id
-        ) {
-            setError('All fields are required.');
+        if (!formData.title.trim() || !formData.content.trim()) {
+            setError('Title and Content are required.');
             setSubmitting(false);
             return;
         }
 
         try {
-            const response = await postService.createPost(formData);
+            const postData = {
+                ...formData,
+                user_id: 1, // Hardcode admin user ID for now
+            };
+
+            if (thumbnailFile) {
+                postData.thumbnail_image = thumbnailFile;
+            }
+
+            const response = await postService.createPost(postData);
 
             if (response.success) {
                 setSuccessMessage('Post created successfully!');
-                setFormData({
-                    title: '',
-                    slug: '',
-                    content: '',
-                    user_id: '',
-                });
-
                 setTimeout(() => navigate('/admin/posts'), 1500);
             } else {
                 throw new Error(response.message || 'Failed to create post');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred during creation.');
+            const backendMessage = err.response?.data?.message;
+            setError(backendMessage || err.message || 'An error occurred during creation.');
         } finally {
             setSubmitting(false);
         }
@@ -99,16 +107,14 @@ const AdminPostCreate = () => {
                     onChange={handleChange}
                     placeholder="Enter post title"
                     required
+                    icon={IconArticle}
                 />
 
-                <TextInput
-                    label="Slug"
-                    name="slug"
-                    value={formData.slug}
-                    onChange={handleChange}
-                    placeholder="custom-url-slug"
-                    required
-                    icon={IconLink}
+                <ImageUploadInput
+                    label="Thumbnail Image"
+                    name="thumbnail_image"
+                    onChange={handleFileChange}
+                    smallText="Upload a thumbnail for the post."
                 />
 
                 <TextInput
@@ -119,17 +125,49 @@ const AdminPostCreate = () => {
                     onChange={handleChange}
                     placeholder="Enter post content"
                     required
-                    rows={8}
+                    rows={12}
                 />
 
-                <SelectInput
-                    label="Author"
-                    name="user_id"
-                    value={formData.user_id}
+                <hr className="my-4" />
+                <h3 className="card-title mb-3">SEO & Metadata</h3>
+
+                <TextInput
+                    label="Slug"
+                    name="slug"
+                    value={formData.slug}
                     onChange={handleChange}
-                    options={DUMMY_USERS}
+                    placeholder="custom-url-slug (auto-generated if left blank)"
+                    icon={IconLink}
+                />
+
+                 <SelectInput
+                    label="Status"
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    options={statusOptions}
                     required
-                    icon={IconUser}
+                    icon={IconStatusChange}
+                />
+
+                <TextInput
+                    label="Meta Title"
+                    name="meta_title"
+                    value={formData.meta_title}
+                    onChange={handleChange}
+                    placeholder="Enter meta title for SEO"
+                    icon={IconFileText}
+                />
+
+                <TextInput
+                    label="Meta Description"
+                    name="meta_description"
+                    type="textarea"
+                    value={formData.meta_description}
+                    onChange={handleChange}
+                    placeholder="Enter meta description for SEO"
+                    rows={3}
+                    icon={IconTag}
                 />
             </AdminForm>
         </>

@@ -30,9 +30,19 @@ export const postService = {
      * Create a new post.
      * @param {Object} postData - Data for the new post (title, content, user_id).
      */
-    createPost(formData) {
-        return axiosInstance.post(`${API_CONFIG.ENDPOINTS.POSTS}`, formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
+    createPost: async (postData) => {
+        const formData = new FormData();
+        for (const key in postData) {
+            if (Object.prototype.hasOwnProperty.call(postData, key)) {
+                if (key === 'thumbnail_image' && postData[key]) {
+                    formData.append('thumbnail_image', postData[key]);
+                } else {
+                    formData.append(key, postData[key]);
+                }
+            }
+        }
+        return await axiosInstance.post(API_CONFIG.ENDPOINTS.POSTS, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
         });
     },
 
@@ -43,7 +53,22 @@ export const postService = {
      * @param {Object} postData - Data for the post update.
      */
     updatePost: async (id, postData) => {
-        return await axiosInstance.put(`${API_CONFIG.ENDPOINTS.POSTS}?id=${id}`, postData);
+        const formData = new FormData();
+        for (const key in postData) {
+            if (Object.prototype.hasOwnProperty.call(postData, key)) {
+                if (key === 'thumbnail_image' && postData[key]) {
+                    formData.append('thumbnail_image', postData[key]);
+                } else {
+                    formData.append(key, postData[key]);
+                }
+            }
+        }
+        return await axiosInstance.post(`${API_CONFIG.ENDPOINTS.POSTS}?id=${id}`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                'X-HTTP-Method-Override': 'PUT',
+            },
+        });
     },
 
     /**
