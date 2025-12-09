@@ -5,7 +5,7 @@ import { API_CONFIG } from '@/config/api.config';
 export const authService = {
     /**
      * Register new user
-     * @param {Object} userData - {email, name, password}
+     * @param {Object} userData - {email, full_name, password}
      */
     register: async (userData) => {
         return await axiosInstance.post(API_CONFIG.ENDPOINTS.REGISTER, userData);
