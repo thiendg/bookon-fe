@@ -6,9 +6,9 @@ const axiosInstance = axios.create({
     baseURL: API_CONFIG.BASE_URL,
     withCredentials: true, // CRITICAL: Automatically sends cookies (session + remember_me)
     timeout: API_CONFIG.TIMEOUT,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    // Do not set a global Content-Type header here.
+    // Let axios/browser set the correct Content-Type per request (important for FormData uploads).
+    headers: {}
 });
 
 // Response interceptor - only unwrap data

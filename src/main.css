@@ -10,3 +10,8 @@ body {
 code {
   font-family: monospace;
 }
+
+a {
+  color: #134e4a !important;
+  /* teal-900 */
+}
