@@ -40,7 +40,31 @@ export const usersService = {
      * @param {Object} userData - User data for update.
      */
     updateUser: async (id, userData) => {
-        return await axiosInstance.put(`${API_CONFIG.ENDPOINTS.USERS}?id=${id}`, userData);
+        // If userData contains a file for the avatar, use FormData
+        if (userData.avatar) {
+            const formData = new FormData();
+            for (const key in userData) {
+                if (Object.prototype.hasOwnProperty.call(userData, key)) {
+                    // The backend will handle a single file upload for 'avatar'
+                    if (key === 'avatar') {
+                        formData.append('avatar', userData[key]);
+                    } else {
+                        formData.append(key, userData[key]);
+                    }
+                }
+            }
+
+            // Use POST with method override for multipart/form-data PUT
+            return await axiosInstance.post(`${API_CONFIG.ENDPOINTS.USERS}?id=${id}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'X-HTTP-Method-Override': 'PUT'
+                },
+            });
+        } else {
+            // Otherwise, send as plain JSON
+            return await axiosInstance.put(`${API_CONFIG.ENDPOINTS.USERS}?id=${id}`, userData);
+        }
     },
 
     /**

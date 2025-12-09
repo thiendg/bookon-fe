@@ -4,19 +4,25 @@ import { useAuth } from '@/hooks/useAuth.hook';
 import { usersService } from '@/services/users.service';
 import BasePage from '@/components/BasePage';
 import { Helmet } from 'react-helmet-async';
-import { IconUser, IconMail, IconKey, IconEdit, IconCheck } from '@tabler/icons-react';
+import { IconUser, IconMail, IconKey, IconPhone, IconHome } from '@tabler/icons-react';
+import ImageUploadInput from '@/components/admin/ImageUploadInput';
+
 
 const ProfilePage = () => {
     const { user, refreshAuth } = useAuth();
     const [formData, setFormData] = useState({
         full_name: '',
         email: '',
+        phone_number: '',
+        address: '',
         current_password: '',
         new_password: '',
         confirm_new_password: ''
     });
+    const [avatarFile, setAvatarFile] = useState(null);
     const [loading, setLoading] = useState(true); // For initial fetch
-    const [submitting, setSubmitting] = useState(false); // For form submission
+    const [profileSubmitting, setProfileSubmitting] = useState(false);
+    const [passwordSubmitting, setPasswordSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
 
@@ -25,7 +31,9 @@ const ProfilePage = () => {
             setFormData(prev => ({
                 ...prev,
                 full_name: user.full_name || '',
-                email: user.email || ''
+                email: user.email || '',
+                phone_number: user.phone_number || '',
+                address: user.address || ''
             }));
             setLoading(false);
         } else {
@@ -42,15 +50,23 @@ const ProfilePage = () => {
         }));
     };
 
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setAvatarFile(e.target.files[0]);
+        } else {
+            setAvatarFile(null);
+        }
+    };
+
     const handleUpdateProfile = async (e) => {
         e.preventDefault();
-        setSubmitting(true);
+        setProfileSubmitting(true);
         setError('');
         setSuccessMessage('');
 
         if (!user || !user.id) {
             setError('User not found.');
-            setSubmitting(false);
+            setProfileSubmitting(false);
             return;
         }
 
@@ -58,58 +74,67 @@ const ProfilePage = () => {
             const updateData = {
                 full_name: formData.full_name,
                 email: formData.email,
+                phone_number: formData.phone_number,
+                address: formData.address,
             };
+
+            if (avatarFile) {
+                updateData.avatar = avatarFile;
+            }
 
             const response = await usersService.updateUser(user.id, updateData);
             if (response.success) {
                 setSuccessMessage('Profile updated successfully!');
-                refreshAuth(); // Refresh user data in context
+                setAvatarFile(null); // Clear file input after successful upload
+                refreshAuth(); // Refresh user data in context to get new avatar_url
             } else {
                 throw new Error(response.message || 'Failed to update profile');
             }
         } catch (err) {
             setError(err.message || 'An error occurred during profile update.');
         } finally {
-            setSubmitting(false);
+            setProfileSubmitting(false);
         }
     };
 
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
-        setSubmitting(true);
+        setPasswordSubmitting(true);
         setError('');
         setSuccessMessage('');
 
         if (!user || !user.id) {
             setError('User not found.');
-            setSubmitting(false);
+            setPasswordSubmitting(false);
+            return;
+        }
+
+        if(formData.new_password === '') {
+            setError('New password cannot be empty.');
+            setPasswordSubmitting(false);
             return;
         }
 
         if (formData.new_password.length < 8) {
             setError('New password must be at least 8 characters long.');
-            setSubmitting(false);
+            setPasswordSubmitting(false);
             return;
         }
         if (formData.new_password !== formData.confirm_new_password) {
             setError('New passwords do not match.');
-            setSubmitting(false);
+            setPasswordSubmitting(false);
             return;
         }
 
         try {
-            // Note: The backend's `updateUser` currently expects JSON `password` field for update.
-            // We are using `current_password` and `new_password` for frontend validation and clarity.
-            // Adjust `usersService.updateUser` or backend API if needed to handle current_password for security.
             const updateData = {
-                password: formData.new_password, // Sending new_password as 'password' to backend
-                // A real app would send current_password for verification here
+                password: formData.new_password,
             };
 
             const response = await usersService.updateUser(user.id, updateData);
             if (response.success) {
                 setSuccessMessage('Password updated successfully!');
-                setFormData(prev => ({ // Clear password fields
+                setFormData(prev => ({
                     ...prev,
                     current_password: '',
                     new_password: '',
@@ -121,7 +146,7 @@ const ProfilePage = () => {
         } catch (err) {
             setError(err.message || 'An error occurred during password update.');
         } finally {
-            setSubmitting(false);
+            setPasswordSubmitting(false);
         }
     };
 
@@ -169,6 +194,13 @@ const ProfilePage = () => {
                                 <h3 className="card-title">Personal Information</h3>
                             </div>
                             <div className="card-body">
+                                <ImageUploadInput
+                                    label="Profile Avatar"
+                                    name="avatar"
+                                    onChange={handleFileChange}
+                                    currentImageUrl={user?.avatar_url ? `${import.meta.env.VITE_API_URL}/${user.avatar_url}` : null}
+                                    smallText="Upload a new avatar to replace the current one."
+                                />
                                 <div className="mb-3">
                                     <label className="form-label">Full Name</label>
                                     <div className="input-icon">
@@ -203,10 +235,42 @@ const ProfilePage = () => {
                                         </span>
                                     </div>
                                 </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Phone Number</label>
+                                    <div className="input-icon">
+                                        <input
+                                            type="tel"
+                                            className="form-control"
+                                            name="phone_number"
+                                            value={formData.phone_number}
+                                            onChange={handleChange}
+                                            placeholder="Your phone number"
+                                        />
+                                        <span className="input-icon-addon">
+                                            <IconPhone />
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <label className="form-label">Address</label>
+                                    <div className="input-icon">
+                                        <textarea
+                                            className="form-control"
+                                            name="address"
+                                            value={formData.address}
+                                            onChange={handleChange}
+                                            placeholder="Your shipping address"
+                                            rows="3"
+                                        ></textarea>
+                                        <span className="input-icon-addon" style={{alignSelf: 'flex-start', paddingTop: '0.75rem'}}>
+                                            <IconHome />
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                             <div className="card-footer text-end">
-                                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                                    {submitting ? 'Updating...' : 'Update Profile'}
+                                <button type="submit" className="btn btn-primary" disabled={profileSubmitting}>
+                                    {profileSubmitting ? 'Updating...' : 'Update Profile'}
                                 </button>
                             </div>
                         </form>
@@ -218,24 +282,6 @@ const ProfilePage = () => {
                                 <h3 className="card-title">Change Password</h3>
                             </div>
                             <div className="card-body">
-                                {/*
-                                <div className="mb-3">
-                                    <label className="form-label">Current Password</label>
-                                    <div className="input-icon">
-                                        <input
-                                            type="password"
-                                            className="form-control"
-                                            name="current_password"
-                                            value={formData.current_password}
-                                            onChange={handleChange}
-                                            placeholder="Enter current password"
-                                        />
-                                        <span className="input-icon-addon">
-                                            <IconKey />
-                                        </span>
-                                    </div>
-                                </div>
-                                */}
                                 <div className="mb-3">
                                     <label className="form-label">New Password</label>
                                     <div className="input-icon">
@@ -246,7 +292,6 @@ const ProfilePage = () => {
                                             value={formData.new_password}
                                             onChange={handleChange}
                                             placeholder="Enter new password (min 8 characters)"
-                                            required
                                             minLength="8"
                                         />
                                         <span className="input-icon-addon">
@@ -264,7 +309,6 @@ const ProfilePage = () => {
                                             value={formData.confirm_new_password}
                                             onChange={handleChange}
                                             placeholder="Confirm new password"
-                                            required
                                         />
                                         <span className="input-icon-addon">
                                             <IconKey />
@@ -273,8 +317,8 @@ const ProfilePage = () => {
                                 </div>
                             </div>
                             <div className="card-footer text-end">
-                                <button type="submit" className="btn btn-primary" disabled={submitting}>
-                                    {submitting ? 'Updating...' : 'Change Password'}
+                                <button type="submit" className="btn btn-primary" disabled={passwordSubmitting}>
+                                    {passwordSubmitting ? 'Updating...' : 'Change Password'}
                                 </button>
                             </div>
                         </form>
@@ -286,3 +330,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

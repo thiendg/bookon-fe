@@ -12,6 +12,8 @@ import {
     IconX
 } from '@tabler/icons-react';
 import { usersService } from '@/services/users.service';
+import AdminForm from '@/components/admin/AdminForm';
+import TextInput from '@/components/admin/TextInput';
 
 const AdminPostCommentDetail = () => {
     const { id } = useParams();

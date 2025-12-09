@@ -91,7 +91,7 @@ const AdminHeader = ({ currentPage, settingData, ...props }) => {
                         <div ref={dropdownRef} className="relative flex items-center gap-x-2 cursor-pointer">
                             <button onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center space-x-2 p-2 rounded-full bg-[#05EAC0] hover:bg-[#5fe1c9] focus:outline-none">
                                 <span className="font-semibold text-sm text-gray-700 hidden sm:block">{user?.full_name || 'Admin'}</span>
-                                <img src={user?.avatar_url || '/user-avatar.png'} alt="Admin Avatar" className="h-8 w-8 rounded-full" />
+                                <img src={user?.avatar_url ? `${import.meta.env.VITE_API_URL}/${user?.avatar_url}` : '/user-avatar.png'} alt="Admin Avatar" className="h-4 w-4 rounded-full" />
                             </button>
 
                             {dropdownOpen && (
