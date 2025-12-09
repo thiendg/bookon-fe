@@ -50,7 +50,9 @@ const AdminOrderDetail = () => {
 
         try {
             const updateData = { status: newStatus };
+            console.log(order.id, updateData)
             const response = await orderService.updateOrder(order.id, updateData);
+            console.log(response)
             if (response.success) {
                 setSuccessMessage('Order status updated successfully!');
                 fetchOrder(); // Refresh order data
@@ -58,7 +60,8 @@ const AdminOrderDetail = () => {
                 throw new Error(response.message || 'Failed to update order status');
             }
         } catch (err) {
-            setError(err.message || 'An error occurred during status update.');
+            const backendMessage = err.response?.data?.message;
+            setError(backendMessage || err.message || 'An error occurred during status update.');
         } finally {
             setSubmitting(false);
         }
@@ -146,11 +149,10 @@ const AdminOrderDetail = () => {
                             <p><strong>Order ID:</strong> {order.id}</p>
                             <p><strong>Customer ID:</strong> {order.user_id}</p>
                             <p><strong>Total Amount:</strong> ${order.total_amount ? parseFloat(order.total_amount).toFixed(2) : '0.00'}</p>
-                            <p><strong>Status:</strong> <span className={`badge bg-${
-                                order.status === 'completed' ? 'success' :
+                            <p><strong>Status:</strong> <span className={`badge bg-${order.status === 'completed' ? 'success' :
                                 order.status === 'pending' ? 'warning' :
-                                'danger'
-                            }`}>{order.status}</span></p>
+                                    'danger'
+                                }`}>{order.status}</span></p>
                             <p><strong>Order Date:</strong> {order.created_at ? new Date(order.created_at * 1000).toLocaleString() : 'N/A'}</p>
                             <p><strong>Last Updated:</strong> {order.updated_at ? new Date(order.updated_at * 1000).toLocaleString() : 'N/A'}</p>
                             {/* Add more details like shipping address, payment info etc. */}
@@ -185,7 +187,7 @@ const AdminOrderDetail = () => {
                                     <td>$30.00</td>
                                 </tr>
                                 */}
-                            {/* </tbody>
+                        {/* </tbody>
                         </table> */}
                     </div>
                 </div>

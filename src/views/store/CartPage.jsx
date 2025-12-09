@@ -1,14 +1,16 @@
 // src/pages/store/views/CartPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import BasePage from "@/components/BasePage";
 import { useCart } from "@/hooks/useCart";
-import { ordersService } from "@/services/orders.service";
+import { useAuth } from "@/hooks/useAuth.hook"; // Import useAuth
+import { orderService } from "@/services/order.service";
 import { orderItemsService } from "@/services/orderItems.service";
 import { Link } from "react-router-dom";
 import { TrashIcon } from "@heroicons/react/24/outline";
 
 const CartPage = () => {
   const { items, updateQuantity, removeFromCart, clearCart, totalAmount } = useCart();
+  const { user } = useAuth(); // Get the authenticated user
 
   const [checkoutData, setCheckoutData] = useState({
     customer_name: "",
@@ -20,6 +22,19 @@ const CartPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  // Pre-fill form with user data if available
+  useEffect(() => {
+    if (user) {
+      setCheckoutData(prev => ({
+        ...prev,
+        customer_name: user.full_name || '',
+        customer_email: user.email || '',
+        customer_phone: user.phone_number || '',
+        shipping_address: user.address || '',
+      }));
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,12 +54,12 @@ const CartPage = () => {
       setMessage("");
 
       const orderPayload = {
-        user_id: null, // Guest order for now
+        user_id: user ? user.id : null, // Use authenticated user's ID or null for guest
         total_amount: totalAmount,
         ...checkoutData,
       };
 
-      const orderRes = await ordersService.create(orderPayload);
+      const orderRes = await orderService.createOrder(orderPayload);
       if (!orderRes.success) {
         throw new Error(orderRes.message || "Failed to create order.");
       }
