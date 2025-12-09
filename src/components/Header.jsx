@@ -1,3 +1,4 @@
+import { useCart } from "@/hooks/useCart"; // Import useCart
 import { useAuth } from "@/hooks/useAuth.hook";
 import { useViewMode } from "@/context/ViewModeContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ const pageClass = (currentPage, pageKey) => {
 
 const CustomerHeader = ({ currentPage, settingData, ...props }) => {
     const { isAuthenticated, user, logout } = useAuth();
+    const { totalItems } = useCart(); // Get total items from cart
     const { toggleViewMode, isAdmin } = useViewMode();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -88,8 +90,13 @@ const CustomerHeader = ({ currentPage, settingData, ...props }) => {
                     <Link to="/contact" className={`${pageClass(currentPage, "contact")} hidden sm:block`}>
                         <img src="/contact.png" className="max-w-8 text-inherit!" />
                     </Link>
-                    <Link to="/cart" className={pageClass(currentPage, "cart")}>
+                    <Link to="/cart" className={`${pageClass(currentPage, "cart")} relative`}>
                         <img src="/shopping-cart.png" className="max-w-8 text-inherit!" />
+                        {totalItems > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                {totalItems}
+                            </span>
+                        )}
                     </Link>
 
                     <div ref={dropdownRef} className="relative flex items-center gap-x-2 cursor-pointer">
